@@ -1,0 +1,53 @@
+<% if (success_msg && success_msg.length> 0) { %>
+    <div class="alert alert-success text-center mx-auto mt-3"
+        style="max-width: 440px;">
+        <%= success_msg %>
+    </div>
+    <% } %>
+
+        <% if (error_msg && error_msg.length> 0) { %>
+            <div class="alert alert-danger text-center mx-auto mt-3"
+                style="max-width: 440px;">
+                <%= error_msg %>
+            </div>
+            <% } %>
+
+
+<div class="card mb-3 mx-auto p-3 mt-2"
+    style="max-width: 440px;">
+    <div class="row g-0">
+        <div class="col-mx-4">
+            <img src="/images/bee.webp"
+                class="img-fluid rounded-start"
+                alt="Bee on a broomstick">
+        </div>
+        <div class="col-md-15">
+            <div class="card-body text-bg-dark p-3">
+                <h5 class="card-title">Welcome to ZCleaning!
+                </h5>
+                <p>Please log in to manage your account.</p>
+                <p class="card-text">
+                    <% if (!user) { %>
+                        <a href="/auth/google"
+                            class="btn btn-outline-warning d-flex align-items-center gap-3">
+                            <img src="https://developers.google.com/identity/images/g-logo.png"
+                                width="20" height="20"
+                                alt="Google logo" />
+                            Sign in with Google
+                        </a>
+                        <% } else { %>
+                            <div
+                                class="d-flex flex-column align-items-start">
+                                <p class="mb-2">You're logged in
+                                    as <strong>
+                                        <%= user.displayName %>
+                                    </strong></p>
+                                <a href="/logout"
+                                    class="btn btn-outline-danger d-flex align-items-center">Logout</a>
+                            </div>
+                            <% } %>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

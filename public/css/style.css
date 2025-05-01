@@ -1,0 +1,73 @@
+:root {
+    --primary: #f5ebe0;
+    --secondary: #d5bdaf;
+    --accent1: #d6ccc2;
+    --accent2: #edede9;
+
+    --bee-yellow: #FFD301;
+    /* Primary: use for highlights, buttons, accents.1 */
+    --bee-orange: #EF9502;
+    /* Button Hover: hover effects or call-to-action buttons.*/
+    --bee-gray: #CBCFC7;
+    /* Secondary: use for backgrounds */
+    --bee-blue: #B7D5DF;
+    --bee-light: #DDEFF2;
+}
+
+body,
+h1,
+h2,
+h3 {
+    font-family: 'Mulish', sans-serif;
+}
+
+.lead {
+    font-weight: 300;
+    border-top: 2px solid var(--bee-orange);
+}
+
+.the-z {
+    color: white;
+    text-shadow: var(--bee-orange) 2px 2px 2px;
+}
+
+header {
+    background-color: var(--primary);
+}
+
+.card-header {
+    background-color: var(--bee-gray);
+}
+
+.r_link {
+    color: #ffc107;
+}
+
+.bg-forms {
+    background-color: RGBA(var(--bs-dark-rgb));
+}
+
+/* .a_link {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+
+.curr_page {
+    margin-right: 10px;
+}
+
+.my-4 {
+    color: #ffc107;
+}
+
+strong {
+    color: #b88b05;
+
+    font-size: 18px;
+}
+
+.lt-color {
+    background-color: #f8f6f5;
+} */
