@@ -13,7 +13,7 @@ const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const passport = require("passport");
 const flash = require("connect-flash");
-
+const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const app = express();
 
 //====================================
@@ -41,6 +41,7 @@ app.use(
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use("/", dashboardRoutes);
 
 //====================================
 // Global middleware for flash messages and user info
@@ -62,6 +63,7 @@ app.get("/", (req, res) => {
 });
 
 app.use(authRoutes);
+
 
 //====================================
 // Start server

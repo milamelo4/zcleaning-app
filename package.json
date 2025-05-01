@@ -1,5 +1,5 @@
 {
-  "name": "zcleaning-redo",
+  "name": "zcleaning-app",
   "version": "1.0.0",
   "description": "ZCleaning full-stack scheduling and client management app",
   "main": "server.js",

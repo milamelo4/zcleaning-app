@@ -47,6 +47,9 @@ header {
     background-color: RGBA(var(--bs-dark-rgb));
 }
 
+.dashboard {
+    background-color: var(--bee-gray);
+}
 /* .a_link {
     text-decoration: none;
     color: inherit;
