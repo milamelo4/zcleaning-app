@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/milamelo4/zcleaning-redo.git"
+    "url": "git+https://github.com/milamelo4/zcleaning-app.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/milamelo4/zcleaning-redo/issues"
+    "url": "https://github.com/milamelo4/zcleaning-app/issues"
   },
-  "homepage": "https://github.com/milamelo4/zcleaning-redo#readme",
+  "homepage": "https://github.com/milamelo4/zcleaning-app#readme",
   "dependencies": {
     "connect-flash": "^0.1.1",
     "dotenv": "^16.5.0",

@@ -15,7 +15,7 @@ const passport = require("passport");
 const flash = require("connect-flash");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const app = express();
-const testRoutes = require("./src/routes/testRoutes");
+const clientsRoutes = require("./src/routes/clients");
 
 //====================================
 // View engine setup
@@ -43,7 +43,7 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/", dashboardRoutes);
-app.use("/", testRoutes);
+app.use("/clients", clientsRoutes);
 
 //====================================
 // Global middleware for flash messages and user info

@@ -1,0 +1,32 @@
+<h2>Client List</h2>
+
+<% if (messages.success_msg) { %>
+  <div class="alert alert-success"><%= messages.success_msg %></div>
+<% } %>
+
+<% if (messages.error_msg) { %>
+  <div class="alert alert-danger"><%= messages.error_msg %></div>
+<% } %>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Phone</th>
+      <th>Service Type</th>
+      <th>Preferred Day</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% clients.forEach(client => { %>
+      <tr>
+        <td><%= client.first_name %> <%= client.last_name %></td>
+        <td><%= client.phone_number.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3' ) %></td>
+        <td><%= client.service_frequency %></td>
+        <td><%= client.preferred_day %></td>
+        <td><%= client.is_active %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

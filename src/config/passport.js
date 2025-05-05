@@ -1,10 +1,9 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const { handleOAuthUser } = require("../controllers/users-controller.js");
 
-const GOOGLE_CLIENT_ID =
-  process.env.GOOGLE_CLIENT_ID || "your-google-client-id";
-const GOOGLE_CLIENT_SECRET =
-  process.env.GOOGLE_CLIENT_SECRET || "your-google-client-secret";
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID; 
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 passport.use(
   new GoogleStrategy(
@@ -14,8 +13,18 @@ passport.use(
       callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
-      // Store or find user in DB here if needed
-      return done(null, profile);
+      (async () => {
+        try {
+          const firstName = profile.name.givenName;
+          const lastName = profile.name.familyName;
+          const email = profile.emails[0].value;
+
+          const user = await handleOAuthUser(firstName, lastName, email);
+          return done(null, user);
+        } catch (err) {
+          return done(err, null);
+        }
+      })();
     }
   )
 );
@@ -25,7 +34,6 @@ passport.serializeUser((user, done) => {
   done(null, user);
 });
 
-// Read user info from session
 passport.deserializeUser((user, done) => {
   done(null, user);
 });
