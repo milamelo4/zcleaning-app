@@ -63,6 +63,34 @@
               </div>
               <% } %>
         </div>
+
+        <hr>
+        <h4 class="mt-4">Address</h4>
+        
+        <div class="mb-3">
+          <label for="street" class="form-label">Street</label>
+          <input type="text" class="form-control" id="street" name="street"
+            value="<%= oldData.street || '' %>" required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="city" class="form-label">City</label>
+          <input type="text" class="form-control" id="city" name="city"
+            value="<%= oldData.city || '' %>" required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="zip" class="form-label">ZIP Code</label>
+          <input type="text" class="form-control" id="zip" name="zip"
+            value="<%= oldData.zip || '' %>" required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="garage_code" class="form-label">Garage Code (if any)</label>
+          <input type="text" class="form-control" id="garage_code" name="garage_code"
+            value="<%= oldData.garage_code || '' %>">
+        </div>
+
       
         <div class="mb-3">
           <label for="hired_date" class="form-label">Hired Date</label>

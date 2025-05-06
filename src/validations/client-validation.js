@@ -45,6 +45,22 @@ const validateClient = [
     .withMessage("Status is required.")
     .isIn(["active", "inactive"])
     .withMessage("Invalid status value."),
+
+  body("street")
+    .trim()
+    .notEmpty()
+    .withMessage("Street is required."),
+
+  body("city")
+  .trim()
+  .notEmpty()
+  .withMessage("City is required."),
+
+  body("zip")
+  .trim().notEmpty()
+  .withMessage("ZIP Code is required."),
+  
+  body("garage_code").optional().trim(),
 ];
 
 module.exports = validateClient;

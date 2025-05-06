@@ -4,6 +4,8 @@ const {
   getAllClients,
 } = require("../models/clients-model");
 
+const { createAddress } = require("../models/address-model");
+
 // Capitalize first letter, lowercase the rest
 function formatName(name) {
   return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
@@ -23,9 +25,16 @@ async function postNewClient(req, res) {
     };
 
     const newClient = await createClient(clientData);
+    await createAddress({
+      street: req.body.street,
+      city: req.body.city,
+      zip: req.body.zip,
+      garage_code: req.body.garage_code,
+      client_id: newClient.client_id, });
+
 
     req.flash("success_msg", "Client added successfully.");
-    res.redirect("/clients"); // change this later to the correct route
+    res.redirect("/clients"); 
   } catch (err) {
     console.error("Error creating client:", err);
     req.flash("error_msg", "Failed to add client.");
@@ -58,11 +67,13 @@ async function showAddClientForm(req, res) {
 
 async function showAllClients(req, res) {
   try {
-    const clients = await getAllClients();
+    const statusFilter = req.query.status || "all"; // Default to "all" if no filter is provided
+    const clients = await getAllClients(statusFilter);
     res.render("pages/clients/list-clients", {
       title: "Client List",
       clients,
       messages: req.flash(),
+      statusFilter,
     });
   } catch (err) {
     console.error("Error fetching clients:", err);

@@ -43,17 +43,31 @@ async function getServiceTypes() {
 //====================================
 // Get all clients  
 //====================================
-async function getAllClients() {
-  const sql = `
-    SELECT c.client_id, c.first_name, c.last_name, c.phone_number, c.hired_date,
-           c.service_hours, c.preferred_day, s.service_frequency, c.is_active
+async function getAllClients(statusFilter) {
+  let sql = `
+    SELECT 
+      c.client_id, c.first_name, c.last_name, c.phone_number, 
+      c.hired_date, c.service_hours, c.preferred_day, 
+      s.service_frequency, c.is_active,
+      a.street, a.city, a.zip, a.garage_code
     FROM clients AS c
     JOIN service_type AS s ON c.service_type_id = s.service_id
-    ORDER BY c.client_id;
+    LEFT JOIN address AS a ON c.client_id = a.client_id
   `;
-  const result = await pool.query(sql);
+
+  const params = [];
+
+  if (statusFilter !== "all") {
+    sql += ` WHERE c.is_active = $1`;
+    params.push(statusFilter);
+  }
+
+  sql += ` ORDER BY c.client_id`;
+
+  const result = await pool.query(sql, params);
   return result.rows;
 }
+
 
 
 module.exports = {

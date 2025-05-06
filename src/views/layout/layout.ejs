@@ -16,14 +16,13 @@
         </div>
         <script>
             setTimeout(() => {
-                    const flashAlerts = document.querySelectorAll('.flash-msg');
-                    flashAlerts.forEach((alert) => {
-                        alert.classList.remove('show');
-                        alert.classList.add('fade');
-                        setTimeout(() => alert.remove(), 300);
-                    });
-                }, 3000);
-
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach((alert) => {
+                    alert.classList.add('fade');
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 300);
+                });
+            }, 3000);
         </script>
         <script src="/js/main.js"></script>
     </body>

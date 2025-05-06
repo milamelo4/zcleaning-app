@@ -1,32 +1,84 @@
-<h2>Client List</h2>
+<div class="container">
+  <form method="GET" action="/clients" class="mb-4">
+    <div class="row g-2 align-items-center">
+      <div class="col-auto">
+        <label for="status" class="col-form-label">Filter by Status:</label>
+      </div>
+      <div class="col-auto">
+        <select name="status" id="status" class="form-select"
+          onchange="this.form.submit()">
+          <option value="all" <%=statusFilter==="all" ? "selected" : "" %>>All
+          </option>
+          <option value="active" <%=statusFilter==="active" ? "selected" : "" %>
+            >Active</option>
+          <option value="inactive" <%=statusFilter==="inactive" ? "selected" : ""
+            %>>Inactive</option>
+        </select>
+      </div>
+    </div>
+  </form>
+</div>
 
-<% if (messages.success_msg) { %>
-  <div class="alert alert-success"><%= messages.success_msg %></div>
-<% } %>
+<div class="container">
+  <div class="row g-4 mt-2">
+    <% clients.forEach(client=> { %>
+      <div class="col-12 col-md-6 col-lg-4 d-flex">
+        <div class="card shadow-sm border-warning flex-fill">
+          <div
+            class="card-body d-flex flex-column justify-content-between h-100">
+            <div>
+              <h5 class="card-title">
+                <i class="bi bi-person-circle me-1"></i>
+                <%= client.first_name %>
+                  <%= client.last_name %>
+              </h5>
 
-<% if (messages.error_msg) { %>
-  <div class="alert alert-danger"><%= messages.error_msg %></div>
-<% } %>
+              <p class="card-text mb-1"><strong>Phone:</strong>
+                <%=
+                  client.phone_number.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'
+                  ) %>
+              </p>
+              <p class="card-text mb-1"><strong>Service:</strong>
+                <%= client.service_frequency %>
+              </p>
+              <p class="card-text mb-1"><strong>Preferred Day:</strong>
+                <%= client.preferred_day %>
+              </p>
+              <p class="card-text mb-1"><strong>Address:</strong>
+                <%= client.street %>, <br>
+                  <%= client.city %>
+                    <%= client.zip %>
+              </p>
+              <p class="card-text mb-1"><strong>Garage Code:</strong>
+                <%= client.garage_code || 'N/A' %>
+              </p>
+              <p class="card-text mb-1"><strong>Status:</strong>
+                <span
+                  class="<%= client.is_active === 'active' ? 'text-success' : 'text-danger' %>">
+                  <%= client.is_active %>
+                </span>
+              </p>
+            </div>
 
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Phone</th>
-      <th>Service Type</th>
-      <th>Preferred Day</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% clients.forEach(client => { %>
-      <tr>
-        <td><%= client.first_name %> <%= client.last_name %></td>
-        <td><%= client.phone_number.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3' ) %></td>
-        <td><%= client.service_frequency %></td>
-        <td><%= client.preferred_day %></td>
-        <td><%= client.is_active %></td>
-      </tr>
-    <% }) %>
-  </tbody>
-</table>
+            <div class="mt-auto">
+              <div
+                class="d-flex justify-content-between align-items-center gap-2">
+                <a href="/clients/edit/<%= client.client_id %>"
+                  class="btn btn-outline-primary btn-sm w-50">Edit</a>
+                <form action="/clients/delete/<%= client.client_id %>"
+                  method="POST"
+                  onsubmit="return confirm('Are you sure you want to delete?')"
+                  class="w-50">
+                  <button type="submit"
+                    class="btn btn-outline-danger btn-sm w-100">Delete</button>
+                </form>
+              </div>
+              <small class="d-block text-center mt-2">Once deleted, this client
+                cannot be recovered</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+  </div>
+</div>
