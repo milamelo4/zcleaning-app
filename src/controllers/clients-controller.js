@@ -1,9 +1,14 @@
-const { createClient, getServiceTypes, getAllClients } = require("../models/clients-model");
+const {
+  createClient,
+  getServiceTypes,
+  getAllClients,
+} = require("../models/clients-model");
 
 // Capitalize first letter, lowercase the rest
 function formatName(name) {
   return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 }
+
 async function postNewClient(req, res) {
   try {
     const clientData = {
@@ -24,7 +29,13 @@ async function postNewClient(req, res) {
   } catch (err) {
     console.error("Error creating client:", err);
     req.flash("error_msg", "Failed to add client.");
-    res.redirect("/clients/add");
+    const serviceTypes = await getServiceTypes();
+    res.render("pages/clients/add-clients", {
+      title: "Add Client",
+      messages: req.flash(),
+      serviceTypes,
+      oldData: req.body,
+    });
   }
 }
 
@@ -35,6 +46,8 @@ async function showAddClientForm(req, res) {
       title: "Add Client",
       messages: req.flash(),
       serviceTypes,
+      oldData: {}, 
+      errors: []
     });
   } catch (err) {
     console.error("Failed to load service types:", err);

@@ -1,6 +1,6 @@
-exports.dashboard = (req, res, next) => {
-    res.render("pages/dashboard", { 
-        title: "Dashboard",
-        user: req.user, // Passport  
-    });  
-}
+exports.dashboard = (req, res) => {
+  res.render("pages/dashboard", {
+    title: "Dashboard",
+    user: req.user,
+  });
+};
