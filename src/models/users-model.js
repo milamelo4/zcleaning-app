@@ -3,7 +3,7 @@ const pool = require('../config/db.js');
 //====================================
 // Create a new user
 //====================================
-async function createUser(firstName, lastName, email, accountType = "Admin") {
+async function createUser(firstName, lastName, email, accountType = "unauthorized") {
   try {
     const sql = `
       INSERT INTO users (account_firstname, account_lastname, account_email, account_type)
