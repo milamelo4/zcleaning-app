@@ -1,6 +1,6 @@
 function checkAdmin(req, res, next) {
   if (req.isAuthenticated() && req.user.account_type.toLowerCase() === "admin") {
-    console.log("User account_type:", req.user?.account_type);
+    //console.log("User account_type:", req.user?.account_type);
 
     return next();
   }

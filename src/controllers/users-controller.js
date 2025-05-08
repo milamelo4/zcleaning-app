@@ -8,11 +8,7 @@ async function handleOAuthUser(firstName, lastName, email) {
   if (!user) {
     user = await createUser(firstName, lastName, email); // no need to pass role
   }
-
-  if (user.account_type === "unauthorized") {
-    throw new Error("Unauthorized user: access denied");
-  }
-
+  
   return user;
 }
 

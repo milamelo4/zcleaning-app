@@ -35,8 +35,32 @@ async function findUserByEmail(email) {
   }
 }
 
+//====================================
+// Get all users
+//====================================
+async function getAllUsers() {
+  const result = await pool.query(
+    "SELECT account_id, account_firstname, account_lastname, account_email, account_type FROM users ORDER BY account_type"
+  );
+  return result.rows;
+}
+
+//====================================
+// Update user role
+//====================================
+async function updateRole(account_id, new_role) {
+  const query = `
+    UPDATE users
+    SET account_type = $1
+    WHERE account_id = $2
+  `;
+  const values = [new_role.toLowerCase(), account_id];
+  return await pool.query(query, values);
+}
 
 module.exports = {
     createUser,
     findUserByEmail,
+    getAllUsers,
+    updateRole,
 };

@@ -1,0 +1,57 @@
+<div class="d-flex">
+  <%- include("../../partials/sidebar") %>
+  <div class="container mt-4">
+    <h2>Manage User Roles</h2>
+    <p class="text-muted">Only Admins can view this page.</p>
+  
+    <% if (users.length> 0) { %>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Current Role</th>
+            <th>New Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(user=> { %>
+            <form action="/admin/promote" method="POST">
+              <tr>
+                <td>
+                  <%= user.account_firstname %>
+                    <%= user.account_lastname %>
+                </td>
+                <td>
+                  <%= user.account_email %>
+                </td>
+                <td>
+                  <%= user.account_type %>
+                </td>
+                <td>
+                  <input type="hidden" name="account_id"
+                    value="<%= user.account_id %>">
+                  <select name="new_role" class="form-select form-select-sm"
+                    required>
+                    <option value="" disabled selected>Choose role</option>
+                    <option value="client">Client</option>
+                    <option value="employee">Employee</option>
+                    <option value="supervisor">Supervisor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </td>
+                <td>
+                  <button type="submit"
+                    class="btn btn-primary btn-sm">Update</button>
+                </td>
+              </tr>
+            </form>
+            <% }) %>
+        </tbody>
+      </table>
+      <% } else { %>
+        <p>No users found.</p>
+        <% } %>
+  </div>
+</div>

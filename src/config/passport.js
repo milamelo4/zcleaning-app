@@ -17,11 +17,11 @@ passport.use(
         try {
           const firstName = profile.name.givenName;
           const lastName = profile.name.familyName;
-          const email = profile.emails[0].value;
-
+          const email = profile.emails[0].value;          
           const user = await handleOAuthUser(firstName, lastName, email);
           return done(null, user);
         } catch (err) {
+           console.error("Error in handleOAuthUser:", err);
           return done(err, null);
         }
       })();

@@ -1,0 +1,26 @@
+<div class="container mt-5">
+    <h2>Welcome, <%= user.account_firstname %>!</h2>
+    <p class="lead">This is your profile page.</p>
+
+    <div class="mt-4">
+        <h4>Account Info</h4>
+        <ul>
+            <li><strong>Name:</strong>
+                <%= user.account_firstname %>
+                    <%= user.account_lastname %>
+            </li>
+            <li><strong>Email:</strong>
+                <%= user.account_email %>
+            </li>
+            <li><strong>Role:</strong>
+                <%= user.account_type %>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mt-4">
+        <h4>Your Schedule</h4>
+        <p>(Coming soon — this could show your assigned clients or upcoming
+            appointments!)</p>
+    </div>
+</div>
