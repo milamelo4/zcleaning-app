@@ -51,3 +51,31 @@ header {
     background-color: var(--bee-gray);
 }
 
+.collapse.show + .bi-chevron-down {
+    transform: rotate(180deg); 
+}
+
+.z {
+    color: var(--primary);
+}
+
+.nav-link.hover-underline {
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.nav-link.hover-underline::after {
+    content: "";
+    position: absolute;
+    left: 1rem;
+    bottom: 0;
+    height: 2px;
+    width: 0%;
+    background-color: #ffc107;
+    /* yellow color like warning button */
+    transition: width 0.3s ease;
+}
+
+.nav-link.hover-underline:hover::after {
+    width: 70%;
+}

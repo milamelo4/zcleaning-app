@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const isLoggedIn = require("../middleware/authMiddleware");
-const { postNewClient, showAddClientForm, showAllClients } = require("../controllers/clients-controller");
+const { postNewClient, showAddClientForm, showAllClients, deleteClient } = require("../controllers/clients-controller");
 
 const validateClient = require("../validations/client-validation");
 const handleValidationErrors = require("../middleware/handleValidationErrors");
@@ -14,5 +14,8 @@ router.get("/", isLoggedIn, showAllClients);
 
 // Form submission
 router.post("/add", isLoggedIn, validateClient, handleValidationErrors, postNewClient);
+
+// delete client
+router.post("/delete/:id", isLoggedIn, deleteClient);
 
 module.exports = router;

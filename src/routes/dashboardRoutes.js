@@ -19,4 +19,12 @@ router.get("/profile", isLoggedIn, (req, res) => {
   });
 });
 
+router.get("/about", (req, res) => {
+  res.render("pages/about", { 
+    title: "About ZCleaning",
+    messages: req.flash(),
+  });
+});
+
+
 module.exports = router;

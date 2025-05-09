@@ -2,6 +2,7 @@ const {
   createClient,
   getServiceTypes,
   getAllClients,
+  deleteById,
 } = require("../models/clients-model");
 
 const { createAddress } = require("../models/address-model");
@@ -31,7 +32,6 @@ async function postNewClient(req, res) {
       zip: req.body.zip,
       garage_code: req.body.garage_code,
       client_id: newClient.client_id, });
-
 
     req.flash("success_msg", "Client added successfully.");
     res.redirect("/clients"); 
@@ -82,8 +82,23 @@ async function showAllClients(req, res) {
   }
 }
 
+async function deleteClient(req, res) {
+  const clientId = req.params.id;
+  try {
+    const client = await deleteById(clientId); // this should check if the client exists
+ // this should delete from the DB
+    req.flash("success_msg", "Client deleted successfully.");
+  } catch (err) {
+    console.error("Error deleting clients:", err);
+    req.flash("error_msg", "Error deleting client.");
+  }
+  res.redirect("/clients");
+}
+
+
 module.exports = {
   postNewClient,
   showAddClientForm,
   showAllClients,
+  deleteClient,
 };

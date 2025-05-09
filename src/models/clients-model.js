@@ -68,10 +68,18 @@ async function getAllClients(statusFilter) {
   return result.rows;
 }
 
+//====================================
+// Delete a client by ID  
+//====================================
+async function deleteById(id) {
+  const sql = "DELETE FROM clients WHERE client_id = $1";
+  await pool.query(sql, [id]);
+}
 
 
 module.exports = {
   createClient,
   getServiceTypes,
   getAllClients,
+  deleteById,
 };

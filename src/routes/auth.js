@@ -25,11 +25,11 @@ router.get("/auth/google/callback", (req, res, next) => {
       const role = user.account_type.toLowerCase();
 
       if (role === "unauthorized") {
-        return res.redirect("/about");
+        return res.redirect("/request-pending");
       }
 
       if (role === "employee") {
-        return res.redirect("/profile"); // ✅ ADD THIS
+        return res.redirect("/profile"); 
       }
 
       req.flash("success_msg", "You are now logged in!");
@@ -38,9 +38,9 @@ router.get("/auth/google/callback", (req, res, next) => {
   })(req, res, next);
 });
 
-router.get("/about", (req, res) => {
-  res.render("pages/about", { 
-    title: "About Us", 
+router.get("/request-pending", (req, res) => {
+  res.render("pages/request-pending", { 
+    title: "Request Pending", 
     messages: req.flash() });
 });
 
