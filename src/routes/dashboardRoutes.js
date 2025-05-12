@@ -23,6 +23,7 @@ router.get("/about", (req, res) => {
   res.render("pages/about", { 
     title: "About ZCleaning",
     messages: req.flash(),
+    user: req.user,
   });
 });
 

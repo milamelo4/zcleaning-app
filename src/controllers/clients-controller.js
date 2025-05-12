@@ -44,6 +44,7 @@ async function postNewClient(req, res) {
       messages: req.flash(),
       serviceTypes,
       oldData: req.body,
+      user: req.user,
     });
   }
 }
@@ -56,7 +57,9 @@ async function showAddClientForm(req, res) {
       messages: req.flash(),
       serviceTypes,
       oldData: {}, 
-      errors: []
+      errors: [],
+      user: req.user,
+      
     });
   } catch (err) {
     console.error("Failed to load service types:", err);
@@ -74,6 +77,7 @@ async function showAllClients(req, res) {
       clients,
       messages: req.flash(),
       statusFilter,
+      user: req.user,
     });
   } catch (err) {
     console.error("Error fetching clients:", err);

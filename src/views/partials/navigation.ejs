@@ -1,6 +1,36 @@
+<!-- 
 <nav class="nav justify-content-center bg-light py-3">
     <a class="nav-link" href="/">Home</a>
     <a class="nav-link" href="#">Employees</a>
     <a class="nav-link" href="/clients">Clients</a>
     <a class="nav-link" href="/about">About Us</a>
+</nav> -->
+<nav class="navbar bg-light px-4 py-2">
+    <div
+        class="container-fluid d-flex flex-wrap align-items-center justify-content-between">
+
+        <!-- Left spacer (keeps center from shifting) -->
+        <div class="d-none d-md-block" style="width: 150px;"></div>
+
+        <!-- Centered nav links -->
+        <div class="d-flex justify-content-center flex-grow-1 gap-3">
+            <a class="nav-link text-primary" href="/">Home</a>
+            <a class="nav-link text-primary" href="/about">About Us</a>
+            <% if (user?.account_type==='admin' ) { %>
+                <a class="nav-link text-primary" href="/dashboard">Dashboard</a>
+                <% } %>
+        </div>
+
+        <!-- Right-aligned user info -->
+        <% if (user) { %>
+            <div class="d-flex flex-column flex-sm-row align-items-center gap-2">
+                <span class="nav-link text-success mb-0">Hello, <%=
+                        user.account_firstname %></span>
+                <a class="nav-link text-danger" href="/logout">Logout</a>
+            </div>
+            <% } %>
+
+    </div>
 </nav>
+  
+  
