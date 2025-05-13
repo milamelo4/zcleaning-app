@@ -76,10 +76,58 @@ async function deleteById(id) {
   await pool.query(sql, [id]);
 }
 
+//====================================
+// Get a client by ID  
+//====================================
+async function getClientById(clientId) {
+  const result = await pool.query("SELECT * FROM clients WHERE client_id = $1", [
+    clientId,
+  ]);
+  return result.rows[0];
+}
+
+//====================================
+// Update a client by ID
+//====================================
+async function updateClientById(clientId, clientData) {
+  const {
+    first_name,
+    last_name,
+    phone_number,
+    hired_date,
+    service_hours,
+    preferred_day,
+    service_type_id,
+    is_active,
+  } = clientData;
+
+  const query = `
+    UPDATE clients
+    SET first_name = $1, last_name = $2, phone_number = $3,
+        hired_date = $4, service_hours = $5,
+        preferred_day = $6, service_type_id = $7, is_active = $8
+    WHERE client_id = $9
+  `;
+
+  await pool.query(query, [
+    first_name,
+    last_name,
+    phone_number,
+    hired_date,
+    service_hours,
+    preferred_day,
+    service_type_id,
+    is_active,
+    clientId,
+  ]);
+}
+
 
 module.exports = {
   createClient,
   getServiceTypes,
   getAllClients,
   deleteById,
+  getClientById,
+  updateClientById,
 };
