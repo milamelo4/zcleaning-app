@@ -26,6 +26,7 @@ app.set("views", path.join(__dirname, "src", "views"));
 app.set("layout", "layout/layout");
 app.use(expressLayouts);
 
+
 //====================================
 // Middleware setup
 //====================================

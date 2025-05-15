@@ -5,6 +5,7 @@ const {
   deleteById,
   getClientById,
   updateClientById,
+  getAllPaymentTypes,
 } = require("../models/clients-model");
 
 const {
@@ -20,6 +21,9 @@ function formatName(name) {
 
 async function postNewClient(req, res) {
   try {
+    const isActiveNew = req.body.is_active_new === "true";
+    const fullHouse = req.body.full_house === "true";
+
     const clientData = {
       first_name: formatName(req.body.first_name),
       last_name: formatName(req.body.last_name),
@@ -28,7 +32,10 @@ async function postNewClient(req, res) {
       service_hours: req.body.service_hours,
       preferred_day: req.body.preferred_day,
       service_type_id: req.body.service_type_id,
-      is_active: req.body.is_active,
+      is_active_new: isActiveNew,
+      notes: req.body.notes,
+      price: req.body.price,
+      full_house: fullHouse,
     };
 
     const newClient = await createClient(clientData);
@@ -37,10 +44,11 @@ async function postNewClient(req, res) {
       city: req.body.city,
       zip: req.body.zip,
       garage_code: req.body.garage_code,
-      client_id: newClient.client_id, });
+      client_id: newClient.client_id,
+    });
 
     req.flash("success_msg", "Client added successfully.");
-    res.redirect("/clients"); 
+    res.redirect("/clients");
   } catch (err) {
     console.error("Error creating client:", err);
     req.flash("error_msg", "Failed to add client.");
@@ -52,6 +60,7 @@ async function postNewClient(req, res) {
       serviceTypes,
       oldData: req.body,
       user: req.user,
+      errors: [],
     });
   }
 }
@@ -63,10 +72,9 @@ async function showAddClientForm(req, res) {
       title: "Add Client",
       messages: req.flash(),
       serviceTypes,
-      oldData: {}, 
+      oldData: {},
       errors: [],
       user: req.user,
-      
     });
   } catch (err) {
     console.error("Failed to load service types:", err);
@@ -97,7 +105,7 @@ async function deleteClient(req, res) {
   const clientId = req.params.id;
   try {
     const client = await deleteById(clientId); // this should check if the client exists
- // this should delete from the DB
+    // this should delete from the DB
     req.flash("success_msg", "Client deleted successfully.");
   } catch (err) {
     console.error("Error deleting clients:", err);
@@ -134,7 +142,10 @@ async function getEditClientView(req, res) {
       service_hours: client.service_hours,
       preferred_day: client.preferred_day,
       service_type_id: client.service_type_id,
-      is_active: client.is_active,
+      is_active_new: client.is_active_new,
+      notes: client.notes,
+      price: client.price,
+      full_house: client.full_house,
     };
 
     res.render("pages/clients/edit-clients", {
@@ -152,9 +163,11 @@ async function getEditClientView(req, res) {
   }
 }
 
-
 async function updateClient(req, res) {
   const clientId = req.params.id;
+  const isActiveNew = req.body.is_active_new === "true";
+  const fullHouse = req.body.full_house === "true";
+
   const {
     first_name,
     last_name,
@@ -163,11 +176,12 @@ async function updateClient(req, res) {
     service_hours,
     preferred_day,
     service_type_id,
-    is_active,
     street,
     city,
     zip,
     garage_code,
+    notes,
+    price,
   } = req.body;
 
   const clientData = {
@@ -178,7 +192,10 @@ async function updateClient(req, res) {
     service_hours,
     preferred_day,
     service_type_id,
-    is_active,
+    is_active_new: isActiveNew,
+    notes,
+    price,
+    full_house: fullHouse,
   };
 
   const addressData = {
@@ -190,8 +207,6 @@ async function updateClient(req, res) {
 
   try {
     await updateClientById(clientId, clientData);
-    console.log("addressData:", addressData);
-
     await updateAddressByClientId(clientId, addressData);
 
     req.flash("success_msg", "Client updated successfully");
@@ -201,13 +216,44 @@ async function updateClient(req, res) {
 
     const serviceTypes = await getServiceTypes();
 
-    res.render("clients/edit-clients", {
+    res.render("pages/clients/edit-clients", {
       title: "Edit Client",
       messages: req.flash(),
       errors: [{ msg: "Something went wrong, please try again." }],
       oldData: req.body,
       serviceTypes,
+      user: req.user,
     });
+  }
+}
+
+async function showClientPayments(req, res) {
+  const clientId = req.params.id;
+
+  try {
+    const client = await getClientById(clientId);
+    const payment_types = await getAllPaymentTypes(clientId);
+
+    if (!client) {
+      req.flash("error_msg", "Client not found.");
+      return res.redirect("/clients");
+    }
+
+    if (!payment_types || payment_types.length === 0) {
+      req.flash("error_msg", "No payment data found for this client.");
+      return res.redirect("/clients");
+    }
+
+    res.render("pages/clients/client-payments", {
+      title: `${client.first_name} ${client.last_name}'s Payments`,
+      user: req.user,
+      messages: req.flash(),
+      payment_types,
+    });
+  } catch (err) {
+    console.error("Error loading payments:", err);
+    req.flash("error_msg", "Could not load payment data.");
+    res.redirect("/clients");
   }
 }
 
@@ -218,4 +264,5 @@ module.exports = {
   deleteClient,
   getEditClientView,
   updateClient,
+  showClientPayments,
 };

@@ -1,0 +1,36 @@
+<div class="d-flex min-vh-100">
+  <%- include("../../partials/sidebar") %>
+
+    <div class="flex-grow-1 p-4">
+      <h1><%= title %></h1>
+      <% if (payment_types && payment_types.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="table-warning">
+              <tr>
+                <th>Payment Type</th>
+                <th>Schedule</th>
+                <th>Due Date</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% payment_types.forEach(type => { %>
+                <tr>
+                  <td><%= type.payment_type %></td>
+                  <td><%= type.payment_schedule %></td>
+                  <td><%= type.due_date ? new Date(type.due_date).toLocaleDateString() : '—' %></td>
+                  <td>$<%= type.price ? Number(type.price).toFixed(2) : '0.00' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p>No payment types found.</p>
+      <% } %>
+
+      <a href="/clients" class="btn btn-outline-secondary mt-4">← Back to Clients</a>      
+
+    </div>
+</div>

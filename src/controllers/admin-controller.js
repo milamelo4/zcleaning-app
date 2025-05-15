@@ -8,6 +8,7 @@ async function showUserRolesPage(req, res) {
       title: "User Roles",
       messages: req.flash(),
       users,
+      user: req.user,
       currentUser: req.user,
     });
   } catch (error) {
