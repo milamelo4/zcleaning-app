@@ -80,7 +80,9 @@ header {
     width: 70%;
 }
 
-/* .bi-google {
-    color: white;
-} */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
 

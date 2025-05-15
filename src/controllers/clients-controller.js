@@ -6,6 +6,7 @@ const {
   getClientById,
   updateClientById,
   getAllPaymentTypes,
+  getAllMissingPayments,
 } = require("../models/clients-model");
 
 const {
@@ -257,6 +258,23 @@ async function showClientPayments(req, res) {
   }
 }
 
+async function showMissingPayments(req, res) {
+  try {
+    const missingPayments = await getAllMissingPayments();
+    res.render("pages/clients/missing-payments", {
+      title: "Missing Payments Report",
+      missingPayments,
+      user: req.user, 
+      messages: req.flash(),
+    });
+  } catch (err) {
+    console.error("Error loading missing payments:", err);
+    req.flash("error_msg", "Failed to load missing payments.");
+    res.redirect("/dashboard");
+  }
+}
+
+
 module.exports = {
   postNewClient,
   showAddClientForm,
@@ -265,4 +283,5 @@ module.exports = {
   getEditClientView,
   updateClient,
   showClientPayments,
+  showMissingPayments,
 };

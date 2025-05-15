@@ -174,6 +174,34 @@ async function getAllPaymentTypes(clientId) {
   return result.rows;
 }
 
+//====================================
+// Get all missing payments 
+//====================================
+async function getAllMissingPayments() {
+  const sql = `
+    SELECT 
+      cp.payment_id,
+      cp.payment_type,
+      cp.payment_schedule,
+      cp.due_date,
+      cp.received_date,
+      cp.expected_received_date,
+      (cp.received_date IS NULL AND cp.due_date < CURRENT_DATE) AS is_overdue,
+      c.client_id,
+      c.first_name,
+      c.last_name,
+      c.price
+    FROM client_payment cp
+    JOIN clients c ON cp.client_id = c.client_id
+    WHERE cp.received_date IS NULL
+      AND cp.due_date < CURRENT_DATE
+    ORDER BY cp.due_date DESC
+  `;
+
+  const result = await pool.query(sql);
+  return result.rows;
+}
+
 
 
 module.exports = {
@@ -184,4 +212,5 @@ module.exports = {
   getClientById,
   updateClientById,
   getAllPaymentTypes,
+  getAllMissingPayments,
 };
