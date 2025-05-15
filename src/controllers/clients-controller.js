@@ -85,7 +85,7 @@ async function showAddClientForm(req, res) {
 
 async function showAllClients(req, res) {
   try {
-    const statusFilter = req.query.status || "all"; // Default to "all" if no filter is provided
+    const statusFilter = req.query.status || "active"; // Default to "all" if no filter is provided
     const clients = await getAllClients(statusFilter);
     res.render("pages/clients/list-clients", {
       title: "Client List",

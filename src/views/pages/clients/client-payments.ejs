@@ -11,18 +11,35 @@
                 <th>Payment Type</th>
                 <th>Schedule</th>
                 <th>Due Date</th>
+                <th>Received Date</th>
                 <th>Price</th>
               </tr>
             </thead>
             <tbody>
-              <% payment_types.forEach(type => { %>
-                <tr>
-                  <td><%= type.payment_type %></td>
-                  <td><%= type.payment_schedule %></td>
-                  <td><%= type.due_date ? new Date(type.due_date).toLocaleDateString() : '—' %></td>
-                  <td>$<%= type.price ? Number(type.price).toFixed(2) : '0.00' %></td>
+              <% payment_types.forEach(type=> { %>
+                <tr class="<%= type.is_overdue ? 'table-danger' : '' %>">
+                  <td>
+                    <%= type.payment_type %>
+                  </td>
+                  <td>
+                    <%= type.payment_schedule %>
+                  </td>
+                  <td>
+                    <%= type.due_date ? new Date(type.due_date).toLocaleDateString() : '—' %>
+                      <% if (type.is_overdue) { %>
+                        <div class="text-danger small">Missing payment!</div>
+                        <% } %>
+                  </td>
+                  <td>
+                    <%= type.received_date ? new Date(type.received_date).toLocaleDateString()
+                      : '—' %>
+                  </td>
+                  
+                  <td>$<%= type.price ? Number(type.price).toFixed(2) : '0.00' %>
+                  </td>
                 </tr>
-              <% }) %>
+                <% }) %>
+              
             </tbody>
           </table>
         </div>

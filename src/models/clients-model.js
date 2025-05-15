@@ -154,11 +154,22 @@ async function updateClientById(clientId, clientData) {
 //====================================
 async function getAllPaymentTypes(clientId) {
   const sql = `
-    SELECT cp.payment_type, cp.payment_schedule, cp.due_date, c.first_name, c.last_name, c.price 
-    FROM client_payment cp
-    JOIN clients c ON cp.client_id = c.client_id
-    WHERE cp.client_id = $1
-  `;
+  SELECT 
+    cp.payment_type, 
+    cp.payment_schedule, 
+    cp.due_date, 
+    cp.received_date,
+    cp.expected_received_date,
+    (cp.received_date IS NULL AND cp.due_date < CURRENT_DATE) AS is_overdue,
+    c.first_name, 
+    c.last_name, 
+    c.price 
+  FROM client_payment cp
+  JOIN clients c ON cp.client_id = c.client_id
+  WHERE cp.client_id = $1
+  ORDER BY cp.due_date DESC
+`;
+
   const result = await pool.query(sql, [clientId]);
   return result.rows;
 }
