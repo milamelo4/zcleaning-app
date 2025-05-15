@@ -1,12 +1,14 @@
 const {
   createClient,
   getServiceTypes,
-  getAllClients,
+  getFilteredClients,
   deleteById,
   getClientById,
   updateClientById,
   getAllPaymentTypes,
   getAllMissingPayments,
+  markPaymentAsReceived,
+  unmarkPaymentAsReceived,
 } = require("../models/clients-model");
 
 const {
@@ -87,12 +89,19 @@ async function showAddClientForm(req, res) {
 async function showAllClients(req, res) {
   try {
     const statusFilter = req.query.status || "active"; // Default to "all" if no filter is provided
-    const clients = await getAllClients(statusFilter);
+    const search =
+      req.query.search
+        ?.replace(/[\u200B-\u200D\uFEFF]/g, "")
+        .trim()
+        .toLowerCase() || "";
+    const clients = await getFilteredClients(statusFilter, search);
+
     res.render("pages/clients/list-clients", {
       title: "Client List",
       clients,
       messages: req.flash(),
       statusFilter,
+      search,
       user: req.user,
     });
   } catch (err) {
@@ -250,6 +259,7 @@ async function showClientPayments(req, res) {
       user: req.user,
       messages: req.flash(),
       payment_types,
+      clientId,
     });
   } catch (err) {
     console.error("Error loading payments:", err);
@@ -274,6 +284,33 @@ async function showMissingPayments(req, res) {
   }
 }
 
+async function markPaymentReceivedController(req, res) {
+  const { clientId, paymentId } = req.params;
+
+  try {
+    await markPaymentAsReceived(paymentId, clientId);
+    req.flash("success_msg", "Payment marked as received.");
+    res.redirect(`/clients/${clientId}/payments`);
+  } catch (err) {
+    console.error("Error marking payment:", err);
+    req.flash("error_msg", "Failed to update payment.");
+    res.redirect(`/clients/${clientId}/payments`);
+  }
+}
+
+async function unmarkPaymentReceivedController(req, res) {
+  const { clientId, paymentId } = req.params;
+
+  try {
+    await unmarkPaymentAsReceived(paymentId, clientId);
+    req.flash("success_msg", "Payment marked as unpaid.");
+    res.redirect(`/clients/${clientId}/payments`);
+  } catch (err) {
+    console.error("Error unmarking payment:", err);
+    req.flash("error_msg", "Failed to update payment.");
+    res.redirect(`/clients/${clientId}/payments`);
+  }
+}
 
 module.exports = {
   postNewClient,
@@ -284,4 +321,6 @@ module.exports = {
   updateClient,
   showClientPayments,
   showMissingPayments,
+  markPaymentReceivedController,
+  unmarkPaymentReceivedController,
 };

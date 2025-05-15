@@ -45,7 +45,8 @@ async function getServiceTypes() {
 //====================================
 // Get all clients  
 //====================================
-async function getAllClients(statusFilter) {
+async function getFilteredClients(statusFilter, search) {
+ 
   let sql = `
     SELECT 
       c.client_id, c.first_name, c.last_name, c.phone_number, 
@@ -59,21 +60,32 @@ async function getAllClients(statusFilter) {
     FROM clients AS c
     JOIN service_type AS s ON c.service_type_id = s.service_id
     LEFT JOIN address AS a ON c.client_id = a.client_id
+    WHERE 1=1
   `;
 
   const params = [];
 
+  // Add status condition
   if (statusFilter === "active") {
-    sql += ` WHERE c.is_active_new = true`;
+    sql += ` AND c.is_active_new = true`;
   } else if (statusFilter === "inactive") {
-    sql += ` WHERE c.is_active_new = false`;
+    sql += ` AND c.is_active_new = false`;
+  }
+
+  // Add search condition
+  if (search) {
+    const paramIndex = params.length + 1;
+    sql += ` AND (LOWER(c.first_name) LIKE $${paramIndex} OR LOWER(c.last_name) LIKE $${paramIndex})`;
+    params.push(`%${search}%`);
   }
 
   sql += ` ORDER BY c.client_id`;
 
   const result = await pool.query(sql, params);
+
   return result.rows;
 }
+
 
 //====================================
 // Delete a client by ID  
@@ -155,6 +167,7 @@ async function updateClientById(clientId, clientData) {
 async function getAllPaymentTypes(clientId) {
   const sql = `
   SELECT 
+    cp.payment_id,
     cp.payment_type, 
     cp.payment_schedule, 
     cp.due_date, 
@@ -202,15 +215,40 @@ async function getAllMissingPayments() {
   return result.rows;
 }
 
+//====================================
+// Mark payment as received
+//====================================
+async function markPaymentAsReceived(paymentId, clientId) {
+  const sql = `
+    UPDATE client_payment
+    SET received_date = CURRENT_DATE
+    WHERE payment_id = $1 AND client_id = $2
+  `;
+  await pool.query(sql, [paymentId, clientId]);
+}
+
+//====================================
+// Unmark payment as received
+//====================================
+async function unmarkPaymentAsReceived(paymentId, clientId) {
+  const sql = `
+    UPDATE client_payment
+    SET received_date = NULL
+    WHERE payment_id = $1 AND client_id = $2
+  `;
+  await pool.query(sql, [paymentId, clientId]);
+}
 
 
 module.exports = {
   createClient,
   getServiceTypes,
-  getAllClients,
+  getFilteredClients,
   deleteById,
   getClientById,
   updateClientById,
   getAllPaymentTypes,
   getAllMissingPayments,
+  markPaymentAsReceived,
+  unmarkPaymentAsReceived,
 };

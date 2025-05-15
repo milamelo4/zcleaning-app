@@ -13,6 +13,7 @@
                 <th>Due Date</th>
                 <th>Received Date</th>
                 <th>Price</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -37,6 +38,21 @@
                   
                   <td>$<%= type.price ? Number(type.price).toFixed(2) : '0.00' %>
                   </td>
+                  <td>
+                    <% if (!type.received_date) { %>
+                      <form method="POST"
+                      action="/clients/<%= clientId %>/payments/<%= type.payment_id %>/mark-paid">
+                        <button class="btn btn-sm btn-success">Mark as Paid</button>
+                      </form>
+                      <% } else { %>
+                        <form method="POST"
+                          action="/clients/<%= clientId %>/payments/<%= type.payment_id %>/unmark-paid">
+                          <button class="btn btn-sm btn-outline-secondary">Unmark</button>
+                        </form>
+                        
+                        <% } %>
+                  </td>
+                  
                 </tr>
                 <% }) %>
               

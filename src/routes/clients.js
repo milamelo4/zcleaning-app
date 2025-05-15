@@ -1,20 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const isLoggedIn = require("../middleware/authMiddleware");
-const { postNewClient, 
-    showAddClientForm, 
-    showAllClients, 
-    deleteClient, 
-    getEditClientView, 
-    updateClient,
-    showClientPayments,
-    showMissingPayments,
- } = require("../controllers/clients-controller");
- const { getAllPaymentTypes } = require("../models/clients-model");
+const {
+  postNewClient,
+  showAddClientForm,
+  showAllClients,
+  deleteClient,
+  getEditClientView,
+  updateClient,
+  showClientPayments,
+  showMissingPayments,
+  markPaymentReceivedController,
+  unmarkPaymentReceivedController,
+} = require("../controllers/clients-controller");
 
 const validateClient = require("../validations/client-validation");
 const handleValidationErrors = require("../middleware/handleValidationErrors");
-const { getClientById } = require("../models/clients-model");
 
 //  Route to add a new client
 router.get("/add", isLoggedIn, showAddClientForm);
@@ -40,4 +41,18 @@ router.get("/:id/payments", isLoggedIn, showClientPayments);
 // Route to get all missing payment 
 router.get("/missing-payments", isLoggedIn, showMissingPayments);
 
+// Route to post new payment
+router.post(
+  "/:clientId/payments/:paymentId/mark-paid",
+  isLoggedIn,
+  markPaymentReceivedController
+);
+
+// Route to unmark payment
+router.post(
+  "/:clientId/payments/:paymentId/unmark-paid",
+  isLoggedIn,
+  unmarkPaymentReceivedController
+);
+  
 module.exports = router;
