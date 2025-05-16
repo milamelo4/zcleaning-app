@@ -39,23 +39,31 @@ async function findUserByEmail(email) {
 // Get all users
 //====================================
 async function getAllUsers() {
-  const result = await pool.query(
-    "SELECT account_id, account_firstname, account_lastname, account_email, account_type FROM users ORDER BY account_type"
-  );
-  return result.rows;
+  try {
+    const result = await pool.query(
+      "SELECT account_id, account_firstname, account_lastname, account_email, account_type FROM users ORDER BY account_type"
+    );
+    return result.rows;
+  } catch (err) {
+    throw new Error("Failed to get all users: " + err.message);
+  }
 }
 
 //====================================
 // Update user role
 //====================================
 async function updateRole(account_id, new_role) {
-  const query = `
-    UPDATE users
-    SET account_type = $1
-    WHERE account_id = $2
-  `;
-  const values = [new_role.toLowerCase(), account_id];
-  return await pool.query(query, values);
+  try {
+    const query = `
+      UPDATE users
+      SET account_type = $1
+      WHERE account_id = $2
+    `;
+    const values = [new_role.toLowerCase(), account_id];
+    return await pool.query(query, values);
+  } catch (err) {
+    throw new Error("Failed to update user role: " + err.message);
+  }
 }
 
 module.exports = {

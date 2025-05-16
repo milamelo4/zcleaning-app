@@ -1,5 +1,7 @@
 const usersModel = require("../models/users-model");
 
+const ALLOWED_ROLES = ["admin", "employee", "unauthorized"];
+
 async function showUserRolesPage(req, res) {
   try {
     const users = await usersModel.getAllUsers();
@@ -20,6 +22,12 @@ async function showUserRolesPage(req, res) {
 
 async function updateUserRole(req, res) {
   const { account_id, new_role } = req.body;
+
+  // Validation
+  if (!account_id || !new_role || !ALLOWED_ROLES.includes(new_role.toLowerCase())) {
+    req.flash("error_msg", "Invalid user or role.");
+    return res.redirect("/admin/promote");
+  }
 
   try {
     await usersModel.updateRole(account_id, new_role);

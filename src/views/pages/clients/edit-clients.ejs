@@ -56,17 +56,32 @@
   
             <div class="mb-3">
               <label for="street" class="form-label">Street</label>
-              <input type="text" name="street" id="street" class="form-control" value="<%= oldData.street || '' %>" required>
+              <input type="text" name="street" id="street"
+                class="form-control <%= errors.find(e => e.param === 'street') ? 'is-invalid' : '' %>"
+                value="<%= oldData.street || '' %>" required>
+              <% const streetErr = errors.find(e => e.param === 'street'); if (streetErr) { %>
+                <div class="invalid-feedback"><%= streetErr.msg %></div>
+              <% } %>
             </div>
   
             <div class="mb-3">
               <label for="city" class="form-label">City</label>
-              <input type="text" name="city" id="city" class="form-control" value="<%= oldData.city || '' %>" required>
+              <input type="text" name="city" id="city"
+                class="form-control <%= errors.find(e => e.param === 'city') ? 'is-invalid' : '' %>"
+                value="<%= oldData.city || '' %>" required>
+              <% const cityErr = errors.find(e => e.param === 'city'); if (cityErr) { %>
+                <div class="invalid-feedback"><%= cityErr.msg %></div>
+              <% } %>
             </div>
   
             <div class="mb-3">
               <label for="zip" class="form-label">ZIP Code</label>
-              <input type="text" name="zip" id="zip" class="form-control" value="<%= oldData.zip || '' %>" required>
+              <input type="text" name="zip" id="zip"
+                class="form-control <%= errors.find(e => e.param === 'zip') ? 'is-invalid' : '' %>"
+                value="<%= oldData.zip || '' %>" required>
+              <% const zipErr = errors.find(e => e.param === 'zip'); if (zipErr) { %>
+                <div class="invalid-feedback"><%= zipErr.msg %></div>
+              <% } %>
             </div>
   
             <div class="mb-3">
@@ -135,8 +150,12 @@
             
             <div class="mb-3">
               <label for="price" class="form-label">Service Price</label>
-              <input type="number" step="0.01" name="price" id="price" class="form-control"
+              <input type="number" step="0.01" name="price" id="price"
+                class="form-control <%= errors.find(e => e.param === 'price') ? 'is-invalid' : '' %>"
                 value="<%= oldData.price || '' %>">
+              <% const priceErr = errors.find(e => e.param === 'price'); if (priceErr) { %>
+                <div class="invalid-feedback"><%= priceErr.msg %></div>
+              <% } %>
             </div>
             
             <div class="mb-3">
@@ -174,4 +193,3 @@
       </div>
     </div>
   </div>
-  
