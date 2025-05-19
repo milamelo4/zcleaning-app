@@ -15,8 +15,10 @@ CREATE TABLE IF NOT EXISTS public.clients (
     CONSTRAINT clients_pkey PRIMARY KEY (client_id),
     CONSTRAINT clients_preferred_day_check CHECK (
         preferred_day IN ('M', 'TUE', 'W', 'TH', 'F', 'NOTSET')
-    )
+    ),
+    CONSTRAINT unique_name_phone UNIQUE (first_name, last_name, phone_number)
 );
+
 
 
 -- Create Service Types

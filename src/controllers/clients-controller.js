@@ -9,6 +9,7 @@ const {
   getAllMissingPayments,
   markPaymentAsReceived,
   unmarkPaymentAsReceived,
+  findClientByNameAndPhone,
 } = require("../models/clients-model");
 
 const {
@@ -19,7 +20,7 @@ const {
 
 // Capitalize first letter, lowercase the rest
 function formatName(name) {
-  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  return name.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 async function postNewClient(req, res) {
@@ -41,6 +42,26 @@ async function postNewClient(req, res) {
       full_house: fullHouse,
     };
 
+    // Check for existing client
+    const existingClient = await findClientByNameAndPhone(
+      clientData.first_name,
+      clientData.last_name,
+      clientData.phone_number
+    );
+
+    if (existingClient) {
+      req.flash("error_msg", "Client already exists.");
+      const serviceTypes = await getServiceTypes();
+      return res.render("pages/clients/add-clients", {
+        title: "Add Client",
+        serviceTypes,
+        oldData: req.body,
+        user: req.user,
+        errors: [],
+      });
+    }
+
+    // Create new client + address
     const newClient = await createClient(clientData);
     await createAddress({
       street: req.body.street,
@@ -59,7 +80,6 @@ async function postNewClient(req, res) {
     const serviceTypes = await getServiceTypes();
     res.render("pages/clients/add-clients", {
       title: "Add Client",
-      messages: req.flash(),
       serviceTypes,
       oldData: req.body,
       user: req.user,
@@ -68,12 +88,12 @@ async function postNewClient(req, res) {
   }
 }
 
+
 async function showAddClientForm(req, res) {
   try {
     const serviceTypes = await getServiceTypes();
     res.render("pages/clients/add-clients", {
       title: "Add Client",
-      messages: req.flash(),
       serviceTypes,
       oldData: {},
       errors: [],
@@ -99,7 +119,6 @@ async function showAllClients(req, res) {
     res.render("pages/clients/list-clients", {
       title: "Client List",
       clients,
-      messages: req.flash(),
       statusFilter,
       search,
       user: req.user,
@@ -160,7 +179,6 @@ async function getEditClientView(req, res) {
 
     res.render("pages/clients/edit-clients", {
       title: "Edit Client",
-      messages: req.flash(),
       errors: [],
       oldData,
       serviceTypes,
@@ -228,7 +246,6 @@ async function updateClient(req, res) {
 
     res.render("pages/clients/edit-clients", {
       title: "Edit Client",
-      messages: req.flash(),
       errors: [{ msg: "Something went wrong, please try again." }],
       oldData: req.body,
       serviceTypes,
@@ -257,7 +274,6 @@ async function showClientPayments(req, res) {
     res.render("pages/clients/client-payments", {
       title: `${client.first_name} ${client.last_name}'s Payments`,
       user: req.user,
-      messages: req.flash(),
       payment_types,
       clientId,
     });

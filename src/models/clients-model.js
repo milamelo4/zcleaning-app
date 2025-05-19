@@ -83,7 +83,8 @@ async function getFilteredClients(statusFilter, search) {
       params.push(`%${search}%`);
     }
 
-    sql += ` ORDER BY c.client_id`;
+    // Final ORDER BY should come last and only once
+    sql += ` ORDER BY c.first_name ASC, c.last_name ASC`;
 
     const result = await pool.query(sql, params);
 
@@ -94,8 +95,23 @@ async function getFilteredClients(statusFilter, search) {
 }
 
 //====================================
+// Check for duplicate client
+//====================================
+
+//====================================
 // Delete a client by ID  
 //====================================
+async function findClientByNameAndPhone(firstName, lastName, phoneNumber) {
+  const sql = `
+    SELECT * FROM clients
+    WHERE LOWER(first_name) = LOWER($1)
+      AND LOWER(last_name) = LOWER($2)
+      AND phone_number = $3
+  `;
+  const result = await pool.query(sql, [firstName, lastName, phoneNumber]);
+  return result.rows[0]; // will be undefined if not found
+}
+
 async function deleteById(id) {
   try {
     const sql = "DELETE FROM clients WHERE client_id = $1";
@@ -289,4 +305,5 @@ module.exports = {
   getAllMissingPayments,
   markPaymentAsReceived,
   unmarkPaymentAsReceived,
+  findClientByNameAndPhone,
 };

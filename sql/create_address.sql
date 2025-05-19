@@ -4,5 +4,5 @@ CREATE TABLE IF NOT EXISTS address (
     city VARCHAR(45),
     zip VARCHAR(10),
     garage_code VARCHAR(20),
-    client_id INTEGER REFERENCES clients(client_id) ON UPDATE CASCADE ON DELETE RESTRICT
+    client_id INTEGER REFERENCES clients(client_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
