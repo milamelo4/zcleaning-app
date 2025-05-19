@@ -13,6 +13,9 @@ const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const passport = require("passport");
 const flash = require("connect-flash");
+const pgSession = require("connect-pg-simple")(session);
+const pool = require("./src/config/db"); // adjust path if needed
+
 
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const clientsRoutes = require("./src/routes/clients");
@@ -37,11 +40,17 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   session({
+    store: new pgSession({
+      pool, // 
+      tableName: "session", // optional: change if you want a different table name
+    }),
     secret: process.env.SESSION_SECRET || "secret-key",
     resave: false,
     saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
   })
 );
+
 
 app.use(flash());
 app.use(passport.initialize());
