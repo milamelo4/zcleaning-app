@@ -26,4 +26,33 @@ async function getUpcomingAppointments() {
   }
 }
 
-module.exports = { getUpcomingAppointments };
+async function createAppointment(data) {
+  try {
+    const sql = `
+      INSERT INTO appointments (
+        client_id,
+        appointment_date,
+        service_type_id,
+        duration_hours,
+        price,
+        notes
+      ) VALUES ($1, $2, $3, $4, $5, $6)
+    `;
+
+    const params = [
+      data.client_id,
+      data.appointment_date,
+      data.service_type_id,
+      data.duration_hours,
+      data.price,
+      data.notes,
+    ];
+
+    const result = await pool.query(sql + " RETURNING appointment_id", params);
+    return result.rows[0].appointment_id;
+  } catch (err) {
+    throw new Error("Failed to insert appointment: " + err.message);
+  }
+}
+
+module.exports = { getUpcomingAppointments, createAppointment };
