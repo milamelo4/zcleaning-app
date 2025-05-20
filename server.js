@@ -21,6 +21,8 @@ const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const clientsRoutes = require("./src/routes/clients");
 const adminRoutes = require("./src/routes/admin");
 const authRoutes = require("./src/routes/auth");
+const appointmentsRoutes = require("./src/routes/appointments");
+
 
 const app = express();
 
@@ -72,6 +74,7 @@ app.use(authRoutes);
 app.use("/", dashboardRoutes);
 app.use("/clients", clientsRoutes);
 app.use("/admin", adminRoutes);
+app.use("/appointments", appointmentsRoutes);
 
 app.get("/", (req, res) => {
   res.render("pages/index", { title: "Home" });
