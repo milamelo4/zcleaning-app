@@ -50,14 +50,15 @@ async function postNewClient(req, res) {
     );
 
     if (existingClient) {
-      req.flash("error_msg", "Client already exists.");
       const serviceTypes = await getServiceTypes();
       return res.render("pages/clients/add-clients", {
         title: "Add Client",
         serviceTypes,
         oldData: req.body,
         user: req.user,
-        errors: [],
+        errors: [
+          { msg: "A client with this name and phone number already exists." },
+        ],
       });
     }
 
@@ -75,18 +76,23 @@ async function postNewClient(req, res) {
     res.redirect("/clients");
   } catch (err) {
     console.error("Error creating client:", err);
-    req.flash("error_msg", "Failed to add client.");
 
     const serviceTypes = await getServiceTypes();
-    res.render("pages/clients/add-clients", {
+    const isDuplicate =
+      err.message && err.message.includes("duplicate key value");
+
+    return res.render("pages/clients/add-clients", {
       title: "Add Client",
       serviceTypes,
       oldData: req.body,
       user: req.user,
-      errors: [],
+      errors: isDuplicate
+        ? [{ msg: "A client with this name and phone number already exists." }]
+        : [{ msg: "An unexpected error occurred. Please try again." }],
     });
   }
 }
+
 
 
 async function showAddClientForm(req, res) {
@@ -241,15 +247,19 @@ async function updateClient(req, res) {
     res.redirect("/clients");
   } catch (err) {
     console.error("Error updating client:", err);
-
+  
     const serviceTypes = await getServiceTypes();
-
-    res.render("pages/clients/edit-clients", {
+    const isDuplicate =
+      err.message && err.message.includes("duplicate key value");
+  
+    return res.render("pages/clients/edit-clients", {
       title: "Edit Client",
-      errors: [{ msg: "Something went wrong, please try again." }],
-      oldData: req.body,
       serviceTypes,
+      oldData: { ...req.body, client_id: clientId },
       user: req.user,
+      errors: isDuplicate
+        ? [{ msg: "Another client with this name and phone number already exists." }]
+        : [{ msg: "Something went wrong, please try again." }],
     });
   }
 }

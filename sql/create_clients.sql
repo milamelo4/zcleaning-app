@@ -19,6 +19,11 @@ CREATE TABLE IF NOT EXISTS public.clients (
     CONSTRAINT unique_name_phone UNIQUE (first_name, last_name, phone_number)
 );
 
+ALTER TABLE clients
+ADD COLUMN rotation VARCHAR(1) 
+CHECK (rotation IN ('A', 'B', 'W')) 
+DEFAULT 'A';
+
 
 
 -- Create Service Types

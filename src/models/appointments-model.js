@@ -55,4 +55,37 @@ async function createAppointment(data) {
   }
 }
 
-module.exports = { getUpcomingAppointments, createAppointment };
+async function getSchedulableClients() {
+  try {
+    const sql = `
+      SELECT 
+        c.client_id,
+        c.first_name,
+        c.last_name,
+        c.preferred_day,
+        c.service_type_id,
+        s.service_frequency,
+        c.rotation,
+        c.is_active_new,
+        (
+          SELECT MAX(a.appointment_date)
+          FROM appointments a
+          WHERE a.client_id = c.client_id
+        ) AS last_appointment_date
+      FROM clients c
+      JOIN service_type s ON c.service_type_id = s.service_id
+      WHERE c.is_active_new = true
+    `;
+    const result = await pool.query(sql);
+    return result.rows;
+  } catch (err) {
+    throw new Error("Failed to get schedulable clients: " + err.message);
+  }
+}
+
+
+module.exports = { 
+  getUpcomingAppointments, 
+  createAppointment, 
+  getSchedulableClients 
+};

@@ -95,8 +95,18 @@ async function getFilteredClients(statusFilter, search) {
 }
 
 //====================================
-// Check for duplicate client
+// Get total number of clients
 //====================================
+async function getTotalClients() {
+  try {
+    const sql = `SELECT COUNT(*) FROM clients WHERE is_active_new = true;`;
+    const result = await pool.query(sql);
+    return parseInt(result.rows[0].count, 10);
+  } catch (err) {
+    throw new Error("Failed to count clients: " + err.message);
+  }
+}
+
 
 //====================================
 // Delete a client by ID  
@@ -306,4 +316,5 @@ module.exports = {
   markPaymentAsReceived,
   unmarkPaymentAsReceived,
   findClientByNameAndPhone,
+  getTotalClients,
 };

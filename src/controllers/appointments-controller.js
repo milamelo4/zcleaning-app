@@ -1,9 +1,7 @@
 const { getUpcomingAppointments } = require("../models/appointments-model");
-const {
-  getServiceTypes,
-  getFilteredClients,
-} = require("../models/clients-model");
-const { createAppointment } = require("../models/appointments-model");
+const { getServiceTypes, getFilteredClients,} = require("../models/clients-model");
+const { createAppointment, getSchedulableClients } = require("../models/appointments-model");
+const { getClientsForWeek } = require("../utils/scheduleHelpers");
 
 async function showSchedule(req, res) {
   try {
@@ -72,8 +70,32 @@ async function addAppointment(req, res) {
   }
 }
 
+async function previewWeeklySchedule(req, res) {
+  try {
+    const { start } = req.query;
+    const weekStartDate = start ? new Date(start) : new Date(); // fallback to today
+
+    const clients = await getSchedulableClients();
+    const suggested = getClientsForWeek(clients, weekStartDate);
+
+    res.render("pages/appointments/weekly-preview", {
+      title: "Suggested Weekly Schedule",
+      appointments: suggested,
+      weekStartDate: weekStartDate.toISOString().slice(0, 10),
+      user: req.user,
+    });
+  } catch (err) {
+    console.error("Error loading weekly schedule preview:", err);
+    req.flash("error_msg", "Could not generate weekly schedule.");
+    res.redirect("/dashboard");
+  }
+}
+
+
+
 module.exports = { 
   showSchedule, 
   showAddAppointmentForm, 
-  addAppointment
+  addAppointment,
+  previewWeeklySchedule,
 };

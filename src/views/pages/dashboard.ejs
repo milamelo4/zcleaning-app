@@ -8,7 +8,18 @@
                 <h1>Welcome, <%= user?.account_firstname || 'User' %>!</h1>
             </div>
 
-            <div class="row">
+            <div class="row">                           
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-1">Total Active Clients:</h5>
+                            <p class="fs-4 mb-0">
+                                <strong><%= totalClients %></strong> <i class="bi bi-people-fill fs-2 text-primary me-3"></i>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-4 mb-3">
                     <div class="card border-warning shadow-sm">
                         <div class="card-body">

@@ -19,6 +19,7 @@ const validateClient = [
     .trim()
     .notEmpty()
     .withMessage("Please enter a phone number.")
+    .customSanitizer((value) => value.replace(/\D/g, "")) // <-- Strip non-digits
     .matches(/^\d{10}$/)
     .withMessage("Phone number must be exactly 10 digits."),
 
@@ -47,19 +48,11 @@ const validateClient = [
     .notEmpty()
     .withMessage("Please enter the street address."),
 
-  body("city")
-    .trim()
-    .notEmpty()
-    .withMessage("Please enter the city."),
+  body("city").trim().notEmpty().withMessage("Please enter the city."),
 
-  body("zip")
-    .trim()
-    .notEmpty()
-    .withMessage("Please enter the ZIP code."),
+  body("zip").trim().notEmpty().withMessage("Please enter the ZIP code."),
 
-  body("garage_code")
-    .optional()
-    .trim(),
+  body("garage_code").optional().trim(),
 
   body("price")
     .notEmpty()
