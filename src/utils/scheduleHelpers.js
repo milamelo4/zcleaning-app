@@ -1,14 +1,22 @@
-function getClientsForWeek(clients, weekStartDate) {
+function getClientsForWeek(clients, weekStartDate, virtualLastDates = {}) {
   const start = new Date(weekStartDate);
   const end = new Date(start);
   end.setDate(start.getDate() + 6);
 
   const dayMap = {
+    SUN: 0,
     M: 1,
+    MON: 1,
     TUE: 2,
+    TUESDAY: 2,
     W: 3,
+    WED: 3,
     TH: 4,
+    THU: 4,
     F: 5,
+    FRI: 5,
+    SAT: 6,
+    SATURDAY: 6,
   };
 
   const suggested = [];
@@ -16,56 +24,21 @@ function getClientsForWeek(clients, weekStartDate) {
   let notSetIndex = 0;
 
   clients.forEach((client) => {
-    // console.log({
-    //   name: `${client.first_name} ${client.last_name}`,
-    //   frequency: client.service_frequency,
-    //   last: client.last_appointment_date,
-    // });
-      
-    const lastDate = client.last_appointment_date
-      ? new Date(client.last_appointment_date)
-      : null;
+    const rawLastDate =
+      virtualLastDates[client.client_id] || client.last_appointment_date;
+    const lastDate = rawLastDate ? new Date(rawLastDate) : null;
 
-    let isDue = false;
-
-    if (!lastDate) {
-      isDue = false; // never had an appointment — due
-    } else {
-      const daysSince = Math.floor((start - lastDate) / (1000 * 60 * 60 * 24));
-
-      if (client.service_frequency === "once_a_week" && daysSince >= 6) {
-        isDue = true;
-      } else if (
-        client.service_frequency === "every_other_week" &&
-        daysSince >= 14
-      ) {
-        isDue = true;
-      } else if (
-        client.service_frequency === "once_a_month" &&
-        daysSince >= 28
-      ) {
-        isDue = true;
-      }
-    }
-
-    if (!isDue) return;
-
+    // 1. Choose the appointment day first
     let appointmentDate;
-
     if (client.preferred_day && dayMap[client.preferred_day]) {
       const preferredDayIndex = dayMap[client.preferred_day];
-      appointmentDate = new Date(
-        start.getFullYear(),
-        start.getMonth(),
-        start.getDate()
-      );
-
+      appointmentDate = new Date(start);
       appointmentDate.setDate(
         start.getDate() + ((preferredDayIndex + 7 - start.getDay()) % 7)
       );
 
+      if (preferredDayIndex > 5) return; // skip weekends unless explicitly allowed
     } else {
-      // Spread NOTSET clients across weekdays
       const weekdayIndex =
         availableWeekdays[notSetIndex % availableWeekdays.length];
       appointmentDate = new Date(start);
@@ -73,17 +46,51 @@ function getClientsForWeek(clients, weekStartDate) {
       notSetIndex++;
     }
 
+    const weekday = appointmentDate.getDay();
+    if (weekday === 0 || weekday === 6) return; // skip if weekend
+
+    // 2. Decide if this client is due
+    let isDue = false;
+    if (client.service_frequency === "once_a_week") {
+      isDue = true;
+    } else if (!lastDate) {
+      isDue = true;
+    } else {
+      const daysSince = Math.floor(
+        (appointmentDate - lastDate) / (1000 * 60 * 60 * 24)
+      );
+
+      if (client.service_frequency === "every_other_week" && daysSince >= 14) {
+        isDue = true;
+      }
+
+      if (client.service_frequency === "once_a_month" && daysSince >= 28) {
+        isDue = true;
+      }
+      
+    }
+
+    if (!isDue) return;
+
     if (appointmentDate >= start && appointmentDate <= end) {
       suggested.push({
         client_id: client.client_id,
         first_name: client.first_name,
         last_name: client.last_name,
         appointment_date: appointmentDate.toISOString().slice(0, 10),
-        weekday: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sat"][
-          appointmentDate.getDay()
-        ],
-
+        weekday: [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ][weekday],
         service_type_id: client.service_type_id,
+        duration_hours: client.service_hours,
+        service_frequency: client.service_frequency,
+        last_appointment_date: client.last_appointment_date, // for display only
       });
     }
   });
@@ -91,4 +98,46 @@ function getClientsForWeek(clients, weekStartDate) {
   return suggested;
 }
 
-module.exports = { getClientsForWeek };
+function getClientsForMonth(clients, year, month) {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const scheduledClients = [];
+  const hoursPerDay = {}; // Track total hours per YYYY-MM-DD
+
+  // Track each client's last appointment using DB history
+  const virtualLastDates = {};
+  clients.forEach((c) => {
+    virtualLastDates[c.client_id] = c.last_appointment_date;
+  });
+
+  for (let d = new Date(firstDay); d <= lastDay; d.setDate(d.getDate() + 7)) {
+    const weekClients = getClientsForWeek(
+      clients,
+      new Date(d),
+      virtualLastDates
+    );
+
+    weekClients.forEach((client) => {
+      const date = new Date(client.appointment_date).toISOString().slice(0, 10);
+
+      const hoursForThisDay = hoursPerDay[date] || 0;
+
+      if (hoursForThisDay + parseFloat(client.duration_hours || 0) > 28) {
+        
+        return; // Skip this client, day is full
+      }
+
+      // Otherwise, proceed to schedule
+      scheduledClients.push(client);
+      hoursPerDay[date] = hoursForThisDay + parseFloat(client.duration_hours);
+
+    
+      // Update the client's virtual last appointment
+      virtualLastDates[client.client_id] = client.appointment_date;
+    });
+  }
+
+  return scheduledClients;
+}
+
+module.exports = { getClientsForWeek, getClientsForMonth };

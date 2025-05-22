@@ -5,7 +5,8 @@ const {
     showSchedule, 
     showAddAppointmentForm,
     addAppointment,
-    previewWeeklySchedule
+    previewWeeklySchedule,
+    previewMonthlySchedule
 } = require("../controllers/appointments-controller");
 
 // Route to display schedule
@@ -17,5 +18,8 @@ router.post("/add", isLoggedIn, addAppointment);
 
 // Show preview for a given month/year
 router.get("/preview-week", isLoggedIn, previewWeeklySchedule);
+
+// Show preview for a given month/year
+router.get("/preview-month", isLoggedIn, previewMonthlySchedule);
 
 module.exports = router;

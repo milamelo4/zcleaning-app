@@ -1,0 +1,112 @@
+<!-- views/pages/appointments/monthly-preview.ejs -->
+
+<div class="d-flex min-vh-100">
+    <%- include("../../partials/sidebar") %>
+
+    <div class="flex-grow-1 p-4">
+        <h1>
+            <%= title %>
+        </h1>
+        <p class="text-muted mb-4">
+            <% const monthNames=[ "January" , "February" , "March" , "April"
+                , "May" , "June" , "July" , "August" , "September"
+                , "October" , "November" , "December" ]; %>
+                <strong>
+                    <%= monthNames[month] %>
+                        <%= year %>
+                </strong>
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-bordered calendar-table">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                </thead>
+                <tbody id="calendar-body">
+                    <% 
+                        const totalDays = new Date(year, month + 1, 0).getDate();
+                        const firstDay = new Date(year, month, 1).getDay();
+                        let day = 1;
+                        let weeks = [];
+                        while (day <= totalDays) {
+                        let week = [];
+                        for (let i = 0; i < 7; i++) {
+                            if (weeks.length === 0 && i < firstDay) {
+                            week.push("");
+                            } else if (day <= totalDays) {
+                            week.push(day);
+                            day++;
+                            } else {
+                            week.push("");
+                            }
+                        }
+                        weeks.push(week);
+                        }
+                    %>
+
+                    <% weeks.forEach(function(week) { %>
+                        <tr>
+                            <% week.forEach(function(d) { %>
+                                <td class="align-top"
+                                    style="height: 140px;">
+                                    <% if (d) { 
+                                        const cellDate=new Date(year, month, d); 
+                                        const appointmentsForDay = appointments.filter(function(a)
+                                        { 
+                                        return new Date(a.appointment_date).toISOString().slice(0,
+                                        10)=== cellDate.toISOString().slice(0,
+                                        10); }); 
+                                        const totalHours = appointmentsForDay.reduce((sum, a) => sum + parseFloat(a.duration_hours || 0), 0);
+                                        %>
+                                        <strong>
+                                            <%= d %>
+                                        </strong><br>
+                                        <small class="text-muted">Total:
+                                            <%= totalHours %>
+                                                hrs</small>
+
+                                                <% appointmentsForDay.forEach(function(a) { %>
+                                                <div class="p-2 bg-light border rounded mb-1 shadow-sm">
+                                                    <strong>
+                                                    <%= a.first_name %> <%= a.last_name %> |
+                                                    <span class="text-success ms-2 border-outline-success">
+                                                        <strong><%= a.duration_hours %> hr</strong>
+                                                    </span>
+                                                    </strong><br>
+
+                                                    <span class="badge bg-warning text-dark">
+                                                    <%= a.service_frequency.replace(/_/g, " ") %>
+                                                    </span><br>
+
+                                                    <% if (a.last_appointment_date) { %>
+                                                    <small class="text-muted">Last cleaned: 
+                                                        <%= new Date(a.last_appointment_date).toLocaleDateString("en-US") %>
+                                                    </small>
+                                                    <% } else { %>
+                                                    <small class="text-muted">No history</small>
+                                                    <% } %>
+                                                </div>
+                                                <% }); %>
+
+                                            <% } %>
+                                </td>
+                                <% }); %>
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+        <a href="/dashboard" class="btn btn-outline-secondary mt-4">← Back
+            to Dashboard</a>
+    </div>
+</div>
+
