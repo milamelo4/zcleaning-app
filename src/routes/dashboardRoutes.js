@@ -7,17 +7,21 @@ const checkAdmin = require("../middleware/checkAdmin");
 router.get('/dashboard', isLoggedIn, checkAdmin, dashboardController.dashboard);
 
 router.get("/profile", isLoggedIn, (req, res) => {
-  if (req.user.account_type.toLowerCase() !== "employee") {
+  const type = req.user.account_type.toLowerCase();
+  const allowed = ["admin", "supervisor", "employee"];
+
+  if (!allowed.includes(type)) {
     req.flash("error_msg", "Access denied.");
     return res.redirect("/");
   }
 
+  // Proceed to render profile
   res.render("pages/profile", {
-    title: "My Profile",
+    title: "Your Profile",
     user: req.user,
-    messages: req.flash(),
   });
 });
+
 
 router.get("/about", (req, res) => {
   res.render("pages/about", { 

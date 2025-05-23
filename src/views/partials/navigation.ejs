@@ -15,12 +15,25 @@
         </div>
   
         <!-- Right-aligned user info -->
-        <% if (typeof user !== 'undefined') { %>
-          <div class="d-flex flex-column flex-sm-row align-items-center gap-2">
-            <span class="nav-link text-success mb-0">Hello, <%= user.account_firstname %></span>
-            <a class="nav-link text-danger" href="/logout">Logout</a>
+        <% if (typeof user !=='undefined' ) { %>
+          <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle d-flex align-items-center"
+              type="button" id="accountDropdown" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <i class="bi bi-person-circle me-2"></i>
+              Hi, <%= user.account_firstname %>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow"
+              aria-labelledby="accountDropdown">
+              <li><a class="dropdown-item" href="/profile">Profile</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+            </ul>
           </div>
-        <% } %>
+          <% } %>
+        
   
       </div>
     </nav>
