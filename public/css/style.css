@@ -31,7 +31,7 @@ h3 {
     text-shadow: var(--bee-orange) 2px 2px 2px;
 }
 
-header {
+header, .bg-custom {
     background-color: var(--primary);
 }
 

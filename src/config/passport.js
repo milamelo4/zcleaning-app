@@ -13,15 +13,23 @@ passport.use(
       callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
+      //console.log(profile)
       (async () => {
         try {
           const firstName = profile.name.givenName;
           const lastName = profile.name.familyName;
-          const email = profile.emails[0].value;          
-          const user = await handleOAuthUser(firstName, lastName, email);
+          const email = profile.emails[0].value;
+          const profileImage = profile._json.picture || null;
+          const user = await handleOAuthUser(
+            firstName,
+            lastName,
+            email,
+            profileImage
+          );
+
           return done(null, user);
         } catch (err) {
-           console.error("Error in handleOAuthUser:", err);
+          console.error("Error in handleOAuthUser:", err);
           return done(err, null);
         }
       })();

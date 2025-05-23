@@ -3,17 +3,24 @@ const pool = require('../config/db.js');
 //====================================
 // Create a new user
 //====================================
-async function createUser(firstName, lastName, email, accountType = "unauthorized") {
+async function createUser(
+  firstName,
+  lastName,
+  email,
+  profileImage,
+  accountType = "unauthorized"
+) {
   try {
     const sql = `
-      INSERT INTO users (account_firstname, account_lastname, account_email, account_type)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO users (account_firstname, account_lastname, account_email, profile_image_url, account_type)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
     const result = await pool.query(sql, [
       firstName,
       lastName,
       email,
+      profileImage,
       accountType,
     ]);
     return result.rows[0];
@@ -66,9 +73,19 @@ async function updateRole(account_id, new_role) {
   }
 }
 
+//====================================
+// Update profile image URL
+//====================================
+async function updateProfileImage(email, imageUrl) {
+  const sql = `UPDATE users SET profile_image_url = $1 WHERE account_email = $2`;
+  await pool.query(sql, [imageUrl, email]);
+}
+
+
 module.exports = {
     createUser,
     findUserByEmail,
     getAllUsers,
     updateRole,
+    updateProfileImage,
 };

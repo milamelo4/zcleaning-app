@@ -22,7 +22,6 @@ router.get("/profile", isLoggedIn, (req, res) => {
   });
 });
 
-
 router.get("/about", (req, res) => {
   res.render("pages/about", { 
     title: "About ZCleaning",
@@ -30,6 +29,5 @@ router.get("/about", (req, res) => {
     user: req.user,
   });
 });
-
 
 module.exports = router;

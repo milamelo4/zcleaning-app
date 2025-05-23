@@ -1,14 +1,16 @@
-const { createUser, findUserByEmail } = require("../models/users-model.js");
+const { createUser, findUserByEmail, updateProfileImage } = require("../models/users-model.js");
 
-async function handleOAuthUser(firstName, lastName, email) {
-  // Check if user exists
+
+async function handleOAuthUser(firstName, lastName, email, profileImage) {
   let user = await findUserByEmail(email);
 
-  // If not found, create them with default role (already "unauthorized" now)
   if (!user) {
-    user = await createUser(firstName, lastName, email); // no need to pass role
+    user = await createUser(firstName, lastName, email, profileImage);
+  } else if (user.profile_image_url !== profileImage && profileImage) {
+    await updateProfileImage(email, profileImage);
+    user.profile_image_url = profileImage;
   }
-  
+
   return user;
 }
 
