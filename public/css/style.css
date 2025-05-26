@@ -79,6 +79,22 @@ header, .bg-custom {
 .nav-link.hover-underline:hover::after {
     width: 70%;
 }
+footer a:hover {
+    text-decoration: underline;
+    color: #ffc107 !important;
+}
+
+.accordion-item {
+    border: none;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #f8f9fa;
+}
+
+.accordion-collapse {
+    border-top: none;
+}
 
 @media print {
     .no-print {

@@ -11,7 +11,7 @@ router.get("/profile", isLoggedIn, (req, res) => {
   const allowed = ["admin", "supervisor", "employee"];
 
   if (!allowed.includes(type)) {
-    req.flash("error_msg", "Access denied.");
+    req.flash("error_msg", "You are not authorized.");
     return res.redirect("/");
   }
 

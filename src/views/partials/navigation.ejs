@@ -21,14 +21,16 @@
               type="button" id="accountDropdown" data-bs-toggle="dropdown"
               aria-expanded="false">
               <i class="bi bi-person-circle me-2"></i>
-              Hi, <%= user.account_firstname %>
+              Account
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow"
               aria-labelledby="accountDropdown">
-              <li><a class="dropdown-item" href="/profile">Profile</a></li>
+              <li class="dropdown-header">Hi, <%= user.account_firstname %></li>
               <li>
-                <hr class="dropdown-divider">
+                <hr class="divider">
               </li>
+              <li><a class="dropdown-item" href="/profile">Profile</a></li>
+              
               <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
             </ul>
           </div>

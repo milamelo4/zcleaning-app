@@ -67,6 +67,12 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  res.locals.year = new Date().getFullYear();
+  next();
+});
+
+
 //====================================
 // Routes setup
 //====================================
@@ -79,6 +85,16 @@ app.use("/appointments", appointmentsRoutes);
 app.get("/", (req, res) => {
   res.render("pages/index", { title: "Home" });
 });
+
+// routes/static.js or wherever you handle static views
+app.get("/privacy-policy", (req, res) => {
+  res.render("pages/privacy-policy", { title: "Privacy Policy" });
+});
+
+app.get("/terms-of-service", (req, res) => {
+  res.render("pages/terms-of-service", { title: "Terms of Service" });
+});
+
 
 // 404 handler (must be after all other routes)
 app.use((req, res, next) => {

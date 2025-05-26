@@ -5,17 +5,19 @@
             class="card-body d-flex flex-column flex-md-row align-items-center gap-4 bg-custom gold rounded-3">
 
             <!-- Profile Image or Fallback -->
-            <% if (user.profile_image_url) { %>
+            <!-- <% if (user.profile_image_url) { %>
+                
                 <img src="<%= user.profile_image_url %>" alt="Profile photo"
                     class="rounded-circle shadow"
                     style="width: 100px; height: 100px; object-fit: cover;">
                 <% } else { %>
                     <i class="bi bi-person-circle fs-1 text-secondary"></i>
-                    <% } %>
+                    <% } %> -->
 
             <!-- User Info -->
             <div>
                 <h4 class="mb-1">
+                <i class="bi bi-person fs-1 text-secondary"></i>
                     <%= user.account_firstname %>
                         <%= user.account_lastname %>
                 </h4>
