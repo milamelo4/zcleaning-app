@@ -8,26 +8,30 @@
         <strong><%= monthNames[month] %> <%= year %></strong>
       </p>
   
-      <% if (unassignedClients.length > 0) { %>
         <div class="mb-4">
           <h5>Unassigned Clients</h5>
-          <div class="d-flex flex-wrap gap-3">
+        <div id="unassigned-list" class="d-flex flex-wrap gap-3"
+            ondragover="event.preventDefault()" ondrop="handleUnassignDrop(event)">
+
             <% unassignedClients.forEach(function(client) { %>
-              <div class="p-2 border rounded bg-light shadow-sm" style="min-width: 180px;">
-                <strong><%= client.first_name %> <%= client.last_name %></strong><br>
-                <span class="badge bg-warning text-dark"><%= client.service_frequency.replace(/_/g, " ") %></span><br>
-                <small class="text-muted">Last cleaned: 
-                  <%= client.last_appointment_date 
-                    ? new Date(client.last_appointment_date).toLocaleDateString("en-US") 
-                    : "No history" %>
-                </small><br>
-                <small class="text-muted">Hours: <%= client.duration_hours %></small>
+                <div id="unassigned-<%= client.client_id %>" 
+                    class="p-2 border rounded bg-light shadow-sm" style="min-width: 180px;"
+                    draggable="true" ondragstart="handleDragStart(event)"
+                    data-client='<%- JSON.stringify(client) %>'>
+           
+                    <strong><%= client.first_name %> <%= client.last_name %></strong><br>
+                    <span class="badge bg-warning text-dark"><%= client.service_frequency.replace(/_/g, " ") %></span><br>
+                    <small class="text-muted">Last cleaned: 
+                    <%= client.last_appointment_date 
+                        ? new Date(client.last_appointment_date).toLocaleDateString("en-US") 
+                        : "No history" %>
+                    </small><br>
+                    <small class="text-muted">Hours: <%= client.duration_hours %></small>
               </div>
             <% }); %>
           </div>
         </div>
-      <% } %>
-  
+ 
       <div class="table-responsive">
         <table class="table table-bordered calendar-table">
           <thead class="table-light text-center">
@@ -66,7 +70,8 @@
             <% weeks.forEach(function(week) { %>
               <tr>
                 <% week.forEach(function(d) { %>
-                  <td class="align-top" style="height: 140px;">
+                    <td class="align-top" style="height: 140px;" ondragover="event.preventDefault()"
+                        ondrop="handleDrop(event, '<%= new Date(year, month, d).toISOString().slice(0, 10) %>')">                
                     <% if (d) { 
                       const cellDate = new Date(year, month, d); 
                       const appointmentsForDay = appointments.filter(function(a) { 
@@ -75,9 +80,16 @@
                       const totalHours = appointmentsForDay.reduce((sum, a) => sum + parseFloat(a.duration_hours || 0), 0);
                     %>
                       <strong><%= d %></strong><br>
-                      <small class="text-muted">Total: <%= totalHours %> hrs</small>
+                    <small class="text-muted">
+                        Total: <span id="total-<%= cellDate.toISOString().slice(0, 10) %>">
+                            <%= totalHours %>
+                        </span> hrs
+                    </small>
+
                       <% appointmentsForDay.forEach(function(a) { %>
-                        <div class="p-2 bg-light border rounded mb-1 shadow-sm">
+                        <div class="p-2 bg-light border rounded mb-1 shadow-sm" draggable="true"
+                            ondragstart="handleDragStart(event)" data-client='<%- JSON.stringify(a) %>'>
+
                           <strong><%= a.first_name %> <%= a.last_name %> |
                             <span class="text-success ms-2 border-outline-success">
                               <%= a.duration_hours %> hrs
@@ -102,9 +114,14 @@
             <% }); %>
           </tbody>
         </table>
-      </div>
-  
+      </div>  
       <a href="/dashboard" class="btn btn-outline-secondary mt-4">← Back to Dashboard</a>
     </div>
+    <script src="/js/appointments-drag.js"></script>
   </div>
+
+//  
+
+
+
   
