@@ -137,7 +137,22 @@ function getClientsForMonth(clients, year, month) {
     });
   }
 
-  return scheduledClients;
-}
+    // After collecting all scheduled clients, find unassigned ones
+    const scheduledClientIds = new Set(scheduledClients.map(c => c.client_id));
 
+    const unassignedClients = clients.filter(c => !scheduledClientIds.has(c.client_id)).map(c => ({
+      client_id: c.client_id,
+      first_name: c.first_name,
+      last_name: c.last_name,
+      duration_hours: c.service_hours,
+      service_frequency: c.service_frequency,
+      last_appointment_date: c.last_appointment_date
+    }));
+  
+    return {
+      scheduledClients,
+      unassignedClients,
+    };
+  }
+  
 module.exports = { getClientsForWeek, getClientsForMonth };

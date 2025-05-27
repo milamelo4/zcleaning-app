@@ -1,6 +1,10 @@
-const { getUpcomingAppointments } = require("../models/appointments-model");
 const { getServiceTypes, getFilteredClients,} = require("../models/clients-model");
-const { createAppointment, getSchedulableClients } = require("../models/appointments-model");
+const { 
+  createAppointment, 
+  getSchedulableClients, 
+  getUpcomingAppointments 
+} = require("../models/appointments-model");
+
 const { getClientsForWeek, getClientsForMonth } = require("../utils/scheduleHelpers");
 
 async function showSchedule(req, res) {
@@ -100,15 +104,22 @@ async function previewMonthlySchedule(req, res) {
     const targetMonth = month ? parseInt(month) : currentDate.getMonth(); // 0-based
 
     const clients = await getSchedulableClients();
-    const appointments = getClientsForMonth(clients, targetYear, targetMonth);
+    const { scheduledClients, unassignedClients } = getClientsForMonth(
+      clients,
+      targetYear,
+      targetMonth
+    );
+
 
     res.render("pages/appointments/monthly-preview", {
       title: "Suggested Monthly Schedule",
-      appointments,
+      appointments: scheduledClients,
+      unassignedClients,
       year: targetYear,
       month: targetMonth,
       user: req.user,
     });
+    
   } catch (err) {
     console.error("Error loading monthly schedule preview:", err);
     req.flash("error_msg", "Could not generate monthly schedule.");
