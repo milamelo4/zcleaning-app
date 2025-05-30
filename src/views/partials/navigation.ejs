@@ -1,5 +1,5 @@
 <div class="no-print">
-  <nav class="navbar bg-light px-4 py-2">
+  <nav class="navbar bg-light px-2 py-2">
       <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between p-2">
   
         <!-- Left spacer (keeps center from shifting) -->
@@ -13,28 +13,39 @@
             <a class="nav-link text-primary" href="/dashboard">Dashboard</a>
           <% } %>
         </div>
-  
-        <!-- Right-aligned user info -->
-        <% if (typeof user !=='undefined' ) { %>
-          <div class="dropdown">
-            <button class="btn btn-light dropdown-toggle d-flex align-items-center"
-              type="button" id="accountDropdown" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              <i class="bi bi-person-circle me-2"></i>
-              Account
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow"
-              aria-labelledby="accountDropdown">
-              <li class="dropdown-header">Hi, <%= user.account_firstname %></li>
-              <li>
-                <hr class="divider">
-              </li>
-              <li><a class="dropdown-item" href="/profile">Profile</a></li>
-              
-              <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
-            </ul>
+        
+        <!-- Mobile Nav Toggle Button -->
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-dark d-md-none m-2" type="button"
+            data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"
+            aria-controls="mobileSidebar">
+            <i class="bi bi-list"></i> Menu
+          </button>
+          <!-- Right-aligned user info -->
+          <div class="d-flex justify-content-start align-items-center gap-2">
+            <% if (typeof user !=='undefined' ) { %>
+              <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle d-flex align-items-center"
+                  type="button" id="accountDropdown" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <i class="bi bi-person-circle me-2"></i>
+                  Account
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow"
+                  aria-labelledby="accountDropdown">
+                  <li class="dropdown-header">Hi, <%= user.account_firstname %></li>
+                  <li>
+                    <hr class="divider">
+                  </li>
+                  <li><a class="dropdown-item" href="/profile">Profile</a></li>
+            
+                  <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                </ul>
+              </div>
+              <% } %>
           </div>
-          <% } %>
+        </div>
+          
         
   
       </div>
