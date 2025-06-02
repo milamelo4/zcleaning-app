@@ -5,95 +5,95 @@ const {
   getUpcomingAppointments 
 } = require("../models/appointments-model");
 
-const { getClientsForWeek, getClientsForMonth } = require("../utils/scheduleHelpers");
+const { getClientsForMonth } = require("../utils/scheduleHelpers");
 
-async function showSchedule(req, res) {
-  try {
-    const appointments = await getUpcomingAppointments();
+// async function showSchedule(req, res) {
+//   try {
+//     const appointments = await getUpcomingAppointments();
 
-    res.render("pages/appointments/schedule", {
-      title: "Upcoming Appointments",
-      appointments,
-      user: req.user,
-    });
-  } catch (err) {
-    console.error("Error loading schedule:", err);
-    req.flash("error_msg", "Could not load schedule.");
-    res.redirect("/dashboard");
-  }
-}
+//     res.render("pages/appointments/schedule", {
+//       title: "Upcoming Appointments",
+//       appointments,
+//       user: req.user,
+//     });
+//   } catch (err) {
+//     console.error("Error loading schedule:", err);
+//     req.flash("error_msg", "Could not load schedule.");
+//     res.redirect("/dashboard");
+//   }
+// }
 
-async function showAddAppointmentForm(req, res) {
-  try {
-    const clients = await getFilteredClients();
-    const serviceTypes = await getServiceTypes();
+// async function showAddAppointmentForm(req, res) {
+//   try {
+//     const clients = await getFilteredClients();
+//     const serviceTypes = await getServiceTypes();
 
-    res.render("pages/appointments/add-appointment", {
-      title: "Add Appointment",
-      clients,
-      serviceTypes,
-      user: req.user,
-      errors: [],
-      oldData: {},
-    });
-  } catch (err) {
-    console.error("Failed to load appointment form:", err);
-    req.flash("error_msg", "Failed to load form.");
-    res.redirect("/appointments/schedule");
-  }
-}
+//     res.render("pages/appointments/add-appointment", {
+//       title: "Add Appointment",
+//       clients,
+//       serviceTypes,
+//       user: req.user,
+//       errors: [],
+//       oldData: {},
+//     });
+//   } catch (err) {
+//     console.error("Failed to load appointment form:", err);
+//     req.flash("error_msg", "Failed to load form.");
+//     res.redirect("/appointments/schedule");
+//   }
+// }
 
-async function addAppointment(req, res) {
-  try {
-    const {
-      client_id,
-      appointment_date,
-      service_type_id,
-      duration_hours,
-      price,
-      notes,
-    } = req.body;
+// async function addAppointment(req, res) {
+//   try {
+//     const {
+//       client_id,
+//       appointment_date,
+//       service_type_id,
+//       duration_hours,
+//       price,
+//       notes,
+//     } = req.body;
 
-    const appointmentData = {
-      client_id,
-      appointment_date,
-      service_type_id,
-      duration_hours: duration_hours || null,
-      price: price || null,
-      notes: notes || null,
-    };
+//     const appointmentData = {
+//       client_id,
+//       appointment_date,
+//       service_type_id,
+//       duration_hours: duration_hours || null,
+//       price: price || null,
+//       notes: notes || null,
+//     };
 
-    await createAppointment(appointmentData);
+//     await createAppointment(appointmentData);
 
-    req.flash("success_msg", "Appointment created successfully.");
-    res.redirect("/appointments/schedule");
-  } catch (err) {
-    console.error("Error creating appointment:", err);
-    req.flash("error_msg", "Failed to create appointment.");
-    res.redirect("/appointments/add");
-  }
-}
+//     req.flash("success_msg", "Appointment created successfully.");
+//     res.redirect("/appointments/schedule");
+//   } catch (err) {
+//     console.error("Error creating appointment:", err);
+//     req.flash("error_msg", "Failed to create appointment.");
+//     res.redirect("/appointments/add");
+//   }
+// }
 
-async function previewWeeklySchedule(req, res) {
-  try {
-    const { start } = req.query;
-    const weekStartDate = start ? new Date(start) : new Date(); // fallback to today
+// async function previewWeeklySchedule(req, res) {
+//   try {
+//     const { start } = req.query;
+//     const weekStartDate = start ? new Date(start) : new Date(); // fallback to today
 
-    const clients = await getSchedulableClients();
-    const suggested = getClientsForWeek(clients, weekStartDate);
+//     const clients = await getSchedulableClients();
+//     const suggested = getClientsForWeek(clients, weekStartDate);
 
-    res.render("pages/appointments/weekly-preview", {
-      title: "Suggested Weekly Schedule",
-      appointments: suggested,
-      weekStartDate: weekStartDate.toISOString().slice(0, 10),
-      user: req.user,
-    });
-  } catch (err) {
-    console.error("Error loading weekly schedule preview:", err);
-    req.flash("error_msg", "Could not generate weekly schedule.");
-    res.redirect("/dashboard");
-  }
-}
+//     res.render("pages/appointments/weekly-preview", {
+//       title: "Suggested Weekly Schedule",
+//       appointments: suggested,
+//       weekStartDate: weekStartDate.toISOString().slice(0, 10),
+//       user: req.user,
+//     });
+//   } catch (err) {
+//     console.error("Error loading weekly schedule preview:", err);
+//     req.flash("error_msg", "Could not generate weekly schedule.");
+//     res.redirect("/dashboard");
+//   }
+// }
 
 async function previewMonthlySchedule(req, res) {
   try {
@@ -110,7 +110,6 @@ async function previewMonthlySchedule(req, res) {
       targetMonth
     );
 
-
     res.render("pages/appointments/monthly-preview", {
       title: "Suggested Monthly Schedule",
       appointments: scheduledClients,
@@ -118,6 +117,7 @@ async function previewMonthlySchedule(req, res) {
       year: targetYear,
       month: targetMonth,
       user: req.user,
+      appointmentsJson: JSON.stringify(scheduledClients),
     });
     
   } catch (err) {
@@ -126,10 +126,81 @@ async function previewMonthlySchedule(req, res) {
     res.redirect("/dashboard");
   }
 }
+
+async function saveSuggestedSchedule(req, res) {
+  try {
+    const raw = req.body.appointments;
+    //console.log("Raw input:", raw);
+
+    let appointments = [];
+    try {
+      appointments = JSON.parse(raw);
+
+      if (typeof appointments === "string") {
+        appointments = JSON.parse(appointments);
+      }
+
+      if (!Array.isArray(appointments)) {
+        appointments = [appointments];
+      }
+
+      appointments = appointments.flat();
+    } catch (err) {
+      console.error("Failed to parse JSON:", err.message);
+      req.flash("error_msg", "Invalid appointment data.");
+      return res.redirect("/appointments/monthly-preview");
+    }
+
+    for (const appt of appointments) {
+      const client_id = parseInt(appt.client_id);
+      const service_type_id = parseInt(appt.service_type_id);
+      const duration_hours = parseFloat(appt.duration_hours);
+      const price = appt.price !== undefined ? parseFloat(appt.price) : 0;
+      const notes = appt.notes || null;
+
+      // console.log("Prepared appointment:", {
+      //   client_id,
+      //   service_type_id,
+      //   duration_hours,
+      //   price,
+      //   notes,
+      // });
+
+      if (
+        isNaN(client_id) ||
+        isNaN(service_type_id) ||
+        isNaN(duration_hours) ||
+        isNaN(price)
+      ) {
+        console.error("Skipping invalid appointment:", appt);
+        continue;
+      }
+
+      await createAppointment({
+        client_id,
+        appointment_date: appt.appointment_date,
+        service_type_id,
+        duration_hours,
+        price,
+        notes,
+      });
+    }
+
+    req.flash("success_msg", "Schedule saved successfully.");
+    res.redirect("/appointments/schedule");
+  } catch (err) {
+    console.error("Error saving suggested schedule:", err);
+    req.flash("error_msg", "Failed to save schedule.");
+    res.redirect("/appointments/monthly-preview");
+  }
+}
+
+
 module.exports = { 
-  showSchedule, 
-  showAddAppointmentForm, 
-  addAppointment,
-  previewWeeklySchedule,
+  //showSchedule, 
+  //showAddAppointmentForm, 
+  //addAppointment,
+  //previewWeeklySchedule,
   previewMonthlySchedule,
+  saveSuggestedSchedule
 };

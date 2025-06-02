@@ -123,14 +123,14 @@ function getClientsForMonth(clients, year, month) {
       const hoursForThisDay = hoursPerDay[date] || 0;
 
       if (hoursForThisDay + parseFloat(client.duration_hours || 0) > 28) {
-        
         return; // Skip this client, day is full
       }
-
+      if (!client.price) {
+        client.price = parseFloat(client.service_price || 0);
+      }
       // Otherwise, proceed to schedule
       scheduledClients.push(client);
       hoursPerDay[date] = hoursForThisDay + parseFloat(client.duration_hours);
-
     
       // Update the client's virtual last appointment
       virtualLastDates[client.client_id] = client.appointment_date;

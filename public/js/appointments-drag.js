@@ -4,8 +4,7 @@ function handleDragStart(event) {
   const clientData = event.target.getAttribute("data-client");
   event.dataTransfer.setData("application/json", clientData);
   draggedElement = event.target; // store a reference to the actual DOM element being dragged
-}
-  
+}  
 
 function handleUnassignDrop(event) {
   event.preventDefault();
@@ -51,7 +50,6 @@ function handleUnassignDrop(event) {
     }</small>
     
   `;
-
   container.appendChild(card);
 }
 
@@ -60,6 +58,9 @@ function handleDrop(event, date) {
 
   const data = event.dataTransfer.getData("application/json");
   const client = JSON.parse(data);
+
+  // Update the appointment_date to the new drop day
+  client.appointment_date = date;
 
   if (draggedElement) draggedElement.remove();
 
@@ -70,15 +71,23 @@ function handleDrop(event, date) {
   card.setAttribute("draggable", "true");
   card.setAttribute("ondragstart", "handleDragStart(event)");
   card.setAttribute("data-client", JSON.stringify(client));
+  console.log("Dropping client on date:", date);
 
   card.innerHTML = `
-      <strong>${client.first_name} ${client.last_name}</strong><br>
-      <small class="text-success">Hours: ${client.duration_hours}</small><br>
-      <span class="badge bg-warning text-dark">${client.service_frequency.replace(
-        /_/g,
-        " "
-      )}</span>
-    `;
+    <strong>${client.first_name} ${client.last_name}</strong><br>
+    <small class="text-success">Hours: ${client.duration_hours}</small><br>
+    <span class="badge bg-warning text-dark">${client.service_frequency.replace(
+      /_/g,
+      " "
+    )}</span><br>
+    <small class="text-muted">Last cleaned: ${
+      client.appointment_date
+        ? new Date(`${client.appointment_date}T00:00:00`).toLocaleDateString(
+            "en-US"
+          )
+        : "No history"
+    }</small><br>
+  `;
 
   target.appendChild(card);
 
@@ -91,11 +100,20 @@ function handleDrop(event, date) {
       total += parseFloat(clientData.duration_hours || 0);
     });
     totalSpan.textContent = total;
-  //console.log("totalSpan updated to:", totalSpan.textContent);
-
   }
 }
-  
+document.addEventListener("DOMContentLoaded", () => {
+  const appointmentsInput = document.getElementById("appointmentsInput");
+
+  if (appointmentsInput && typeof appointmentsJson !== "undefined") {
+    appointmentsInput.value = JSON.stringify(appointmentsJson);
+    //.log("appointmentsInput filled:", appointmentsInput.value);
+  } else {
+    //console.log("appointmentsInput or appointmentsJson missing");
+  }
+});
+
+
 window.handleDragStart = handleDragStart;
 window.handleDrop = handleDrop;
 window.handleUnassignDrop = handleUnassignDrop;

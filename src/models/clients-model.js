@@ -303,7 +303,6 @@ async function unmarkPaymentAsReceived(paymentId, clientId) {
   }
 }
 
-
 module.exports = {
   createClient,
   getServiceTypes,
