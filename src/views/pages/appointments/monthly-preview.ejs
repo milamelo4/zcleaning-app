@@ -20,13 +20,14 @@
                     data-client='<%- JSON.stringify(client) %>'>
            
                     <strong><%= client.first_name %> <%= client.last_name %></strong><br>
+                    <small class="text-success">Hours: <%= client.duration_hours %></small><br>
                     <span class="badge bg-warning text-dark"><%= client.service_frequency.replace(/_/g, " ") %></span><br>
                     <small class="text-muted">Last cleaned: 
                     <%= client.last_appointment_date 
                         ? new Date(client.last_appointment_date).toLocaleDateString("en-US") 
                         : "No history" %>
-                    </small><br>
-                    <small class="text-muted">Hours: <%= client.duration_hours %></small>
+                    </small>
+                    
               </div>
             <% }); %>
           </div>
@@ -70,8 +71,10 @@
             <% weeks.forEach(function(week) { %>
               <tr>
                 <% week.forEach(function(d) { %>
-                    <td class="align-top" style="height: 140px;" ondragover="event.preventDefault()"
-                        ondrop="handleDrop(event, '<%= new Date(year, month, d).toISOString().slice(0, 10) %>')">                
+                  <td class="align-top" style="height: 140px;"
+                  data-date="<%= new Date(year, month, d).toISOString().slice(0, 10) %>"
+                  ondragover="event.preventDefault()"
+                  ondrop="handleDrop(event, '<%= new Date(year, month, d).toISOString().slice(0, 10) %>')">                             
                     <% if (d) { 
                       const cellDate = new Date(year, month, d); 
                       const appointmentsForDay = appointments.filter(function(a) { 
@@ -90,11 +93,9 @@
                         <div class="p-2 bg-light border rounded mb-1 shadow-sm" draggable="true"
                             ondragstart="handleDragStart(event)" data-client='<%- JSON.stringify(a) %>'>
 
-                          <strong><%= a.first_name %> <%= a.last_name %> |
-                            <span class="text-success ms-2 border-outline-success">
-                              <%= a.duration_hours %> hrs
-                            </span>
-                          </strong><br>
+                          <strong><%= a.first_name %> <%= a.last_name %></strong><br> 
+                          <small class="text-success border-outline-success">Hours: <%= a.duration_hours %></small>                          
+                          <br>
                           <span class="badge bg-warning text-dark">
                             <%= a.service_frequency.replace(/_/g, " ") %>
                           </span><br>

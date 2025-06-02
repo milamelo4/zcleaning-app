@@ -68,6 +68,7 @@ async function getSchedulableClients() {
         c.rotation,
         c.service_hours,
         c.is_active_new,
+        c.price,
         (
           SELECT MAX(a.appointment_date)
           FROM appointments a
