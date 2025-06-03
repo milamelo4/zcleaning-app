@@ -90,7 +90,8 @@ function getClientsForWeek(clients, weekStartDate, virtualLastDates = {}) {
         service_type_id: client.service_type_id,
         duration_hours: client.service_hours,
         service_frequency: client.service_frequency,
-        last_appointment_date: client.last_appointment_date, // for display only
+        last_appointment_date: client.last_appointment_date,
+        price: client.price || 0, 
       });
     }
   });

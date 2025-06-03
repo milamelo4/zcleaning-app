@@ -3,23 +3,17 @@ const router = express.Router();
 const isLoggedIn = require("../middleware/authMiddleware");
 const { 
     previewMonthlySchedule,
-    saveSuggestedSchedule
+    saveSuggestedSchedule,
+    reviewSavedSchedule
 } = require("../controllers/appointments-controller");
-
-// Route to display schedule
-//router.get("/schedule", isLoggedIn, showSchedule);
-
-//router.get("/add", isLoggedIn, showAddAppointmentForm);
-
-//router.post("/add", isLoggedIn, addAppointment);
-
-// Show preview for a given month/year
-//router.get("/preview-week", isLoggedIn, previewWeeklySchedule);
 
 // Show preview for a given month/year
 router.get("/preview-month", isLoggedIn, previewMonthlySchedule);
 
+// Route to save the suggested schedule
+router.get("/review", isLoggedIn, reviewSavedSchedule)
+
 // Save the suggested schedule
-router.post("/save-suggested", saveSuggestedSchedule);
+router.post("/save-suggested", isLoggedIn, saveSuggestedSchedule);
 
 module.exports = router;

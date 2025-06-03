@@ -14,7 +14,7 @@ const session = require("express-session");
 const passport = require("passport");
 const flash = require("connect-flash");
 const pgSession = require("connect-pg-simple")(session);
-const pool = require("./src/config/db"); // adjust path if needed
+const pool = require("./src/config/db"); 
 
 
 const dashboardRoutes = require("./src/routes/dashboardRoutes");

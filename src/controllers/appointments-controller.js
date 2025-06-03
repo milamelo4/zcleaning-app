@@ -1,99 +1,9 @@
-const { getServiceTypes, getFilteredClients,} = require("../models/clients-model");
 const { 
   createAppointment, 
-  getSchedulableClients, 
-  getUpcomingAppointments 
+  getSchedulableClients,  
 } = require("../models/appointments-model");
 
 const { getClientsForMonth } = require("../utils/scheduleHelpers");
-
-// async function showSchedule(req, res) {
-//   try {
-//     const appointments = await getUpcomingAppointments();
-
-//     res.render("pages/appointments/schedule", {
-//       title: "Upcoming Appointments",
-//       appointments,
-//       user: req.user,
-//     });
-//   } catch (err) {
-//     console.error("Error loading schedule:", err);
-//     req.flash("error_msg", "Could not load schedule.");
-//     res.redirect("/dashboard");
-//   }
-// }
-
-// async function showAddAppointmentForm(req, res) {
-//   try {
-//     const clients = await getFilteredClients();
-//     const serviceTypes = await getServiceTypes();
-
-//     res.render("pages/appointments/add-appointment", {
-//       title: "Add Appointment",
-//       clients,
-//       serviceTypes,
-//       user: req.user,
-//       errors: [],
-//       oldData: {},
-//     });
-//   } catch (err) {
-//     console.error("Failed to load appointment form:", err);
-//     req.flash("error_msg", "Failed to load form.");
-//     res.redirect("/appointments/schedule");
-//   }
-// }
-
-// async function addAppointment(req, res) {
-//   try {
-//     const {
-//       client_id,
-//       appointment_date,
-//       service_type_id,
-//       duration_hours,
-//       price,
-//       notes,
-//     } = req.body;
-
-//     const appointmentData = {
-//       client_id,
-//       appointment_date,
-//       service_type_id,
-//       duration_hours: duration_hours || null,
-//       price: price || null,
-//       notes: notes || null,
-//     };
-
-//     await createAppointment(appointmentData);
-
-//     req.flash("success_msg", "Appointment created successfully.");
-//     res.redirect("/appointments/schedule");
-//   } catch (err) {
-//     console.error("Error creating appointment:", err);
-//     req.flash("error_msg", "Failed to create appointment.");
-//     res.redirect("/appointments/add");
-//   }
-// }
-
-// async function previewWeeklySchedule(req, res) {
-//   try {
-//     const { start } = req.query;
-//     const weekStartDate = start ? new Date(start) : new Date(); // fallback to today
-
-//     const clients = await getSchedulableClients();
-//     const suggested = getClientsForWeek(clients, weekStartDate);
-
-//     res.render("pages/appointments/weekly-preview", {
-//       title: "Suggested Weekly Schedule",
-//       appointments: suggested,
-//       weekStartDate: weekStartDate.toISOString().slice(0, 10),
-//       user: req.user,
-//     });
-//   } catch (err) {
-//     console.error("Error loading weekly schedule preview:", err);
-//     req.flash("error_msg", "Could not generate weekly schedule.");
-//     res.redirect("/dashboard");
-//   }
-// }
 
 async function previewMonthlySchedule(req, res) {
   try {
@@ -109,6 +19,8 @@ async function previewMonthlySchedule(req, res) {
       targetYear,
       targetMonth
     );
+
+    req.session.scheduleDraft = scheduledClients;
 
     res.render("pages/appointments/monthly-preview", {
       title: "Suggested Monthly Schedule",
@@ -158,14 +70,6 @@ async function saveSuggestedSchedule(req, res) {
       const price = appt.price !== undefined ? parseFloat(appt.price) : 0;
       const notes = appt.notes || null;
 
-      // console.log("Prepared appointment:", {
-      //   client_id,
-      //   service_type_id,
-      //   duration_hours,
-      //   price,
-      //   notes,
-      // });
-
       if (
         isNaN(client_id) ||
         isNaN(service_type_id) ||
@@ -195,12 +99,27 @@ async function saveSuggestedSchedule(req, res) {
   }
 }
 
+async function reviewSavedSchedule(req, res) {
+  const scheduleDraft = req.session.scheduleDraft;
+
+  if (!scheduleDraft || !Array.isArray(scheduleDraft)) {
+    req.flash("error_msg", "No schedule found to review.");
+    return res.redirect("/appointments/monthly-preview");
+  }
+  // sort by appointment date
+  scheduleDraft.sort(
+    (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date)
+  );
+  res.render("pages/appointments/review", {
+    title: "Review Final Schedule",
+    appointments: scheduleDraft,
+    appointmentsJson: JSON.stringify(scheduleDraft),
+    user: req.user,
+  });
+}
 
 module.exports = { 
-  //showSchedule, 
-  //showAddAppointmentForm, 
-  //addAppointment,
-  //previewWeeklySchedule,
+  reviewSavedSchedule,
   previewMonthlySchedule,
   saveSuggestedSchedule
 };

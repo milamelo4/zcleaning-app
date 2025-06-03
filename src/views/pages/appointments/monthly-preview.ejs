@@ -117,16 +117,14 @@
         </table>
       </div>  
       <a href="/dashboard" class="btn btn-outline-secondary mt-4">← Back to Dashboard</a>
-      <form id="saveScheduleForm" method="POST" action="/appointments/save-suggested">
-        <input type="hidden" name="appointments" id="appointmentsInput">
-        <button type="submit" class="btn btn-success mt-3">Save This Schedule</button>
-      </form>
+      <div>
+        <a href="/appointments/review" class="btn btn-primary mt-4">
+          Review & Post Final Schedule →
+        </a>
+      </div>
+
     </div>
 </div> 
-<script>
-  // eslint-disable-next-line
-  const appointmentsJson = <%- JSON.stringify(appointmentsJson) %>;
-</script>
 <script src="/js/appointments-drag.js"></script>
 
 
