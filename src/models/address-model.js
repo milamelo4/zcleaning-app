@@ -1,5 +1,8 @@
 const pool = require("../config/db");
 
+//====================================
+// Create a new address
+//====================================
 async function createAddress(addressData) {
   try {
     const sql = `
@@ -21,6 +24,9 @@ async function createAddress(addressData) {
   }
 }
 
+//====================================
+// Update address by client ID
+//====================================
 async function updateAddressByClientId(clientId, addressData) {
   try {
     const sql = `
@@ -42,6 +48,9 @@ async function updateAddressByClientId(clientId, addressData) {
   }
 }
 
+//====================================
+// Get address by client ID
+//====================================
 async function getAddressByClientId(clientId) {
   try {
     const result = await pool.query(

@@ -1,5 +1,8 @@
 const pool = require("../config/db");
 
+//====================================
+// Get all upcoming appointments
+//====================================
 async function getUpcomingAppointments() {
   try {
     const sql = `
@@ -26,6 +29,9 @@ async function getUpcomingAppointments() {
   }
 }
 
+//====================================
+// Create a new appointment
+//====================================
 async function createAppointment(data) {
   try {
     const sql = `
@@ -55,6 +61,9 @@ async function createAppointment(data) {
   }
 }
 
+//====================================
+// Get all schedulable clients
+//====================================
 async function getSchedulableClients() {
   try {
     const sql = `
@@ -84,7 +93,6 @@ async function getSchedulableClients() {
     throw new Error("Failed to get schedulable clients: " + err.message);
   }
 }
-
 
 module.exports = { 
   getUpcomingAppointments, 

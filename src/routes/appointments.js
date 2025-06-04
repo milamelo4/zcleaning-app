@@ -10,7 +10,7 @@ const {
 // Show preview for a given month/year
 router.get("/preview-month", isLoggedIn, previewMonthlySchedule);
 
-// Route to save the suggested schedule
+// Route to review the suggested schedule
 router.get("/review", isLoggedIn, reviewSavedSchedule)
 
 // Save the suggested schedule

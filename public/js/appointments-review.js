@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (form && appointmentsInput) {
     const raw = form.dataset.appointments;
-         
+
     if (raw && raw.trim()) {
       try {
         appointments = JSON.parse(raw);
@@ -14,8 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Failed to parse appointments JSON:", err.message);
         appointments = [];
       }
-    } else {
-      appointments = [];
     }
 
     form.addEventListener("submit", (e) => {
@@ -40,10 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --------- Handle client name search filter ---------
+  // --------- Shared DOM elements ---------
   const searchInput = document.getElementById("searchInput");
+  const dateInput = document.getElementById("dateInput");
   const rows = document.querySelectorAll("tbody tr");
 
+  // --------- Handle client name search filter ---------
   if (searchInput && rows.length > 0) {
     searchInput.addEventListener("keyup", () => {
       const filter = searchInput.value.toLowerCase();
@@ -57,21 +57,17 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
-});
-// --------- Handle search by date ---------
-const searchInput = document.getElementById("searchInput");
-const dateInput = document.getElementById("dateInput");
-const rows = document.querySelectorAll("tbody tr");
 
-if (dateInput && rows.length > 0) {
-  dateInput.addEventListener("change", () => {
-    const selectedDate = dateInput.value;
+  // --------- Handle search by date ---------
+  if (dateInput && rows.length > 0) {
+    dateInput.addEventListener("change", () => {
+      const selectedDate = dateInput.value;
 
-    rows.forEach((row) => {
-      const apptDate = row.querySelectorAll("td")[1]?.textContent.trim();
-      row.style.display =
-        selectedDate && !apptDate.includes(selectedDate) ? "none" : "";
+      rows.forEach((row) => {
+        const apptDate = row.querySelectorAll("td")[1]?.textContent.trim();
+        row.style.display =
+          selectedDate && !apptDate.includes(selectedDate) ? "none" : "";
+      });
     });
-  });
-}
-
+  }
+});
