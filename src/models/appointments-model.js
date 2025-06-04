@@ -10,8 +10,6 @@ async function getUpcomingAppointments() {
         a.appointment_id,
         a.appointment_date,
         a.duration_hours,
-        a.price,
-        a.notes,
         c.first_name,
         c.last_name,
         s.service_frequency
