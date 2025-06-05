@@ -8,7 +8,6 @@ async function showUserRolesPage(req, res) {
 
     res.render("pages/admin/promote", {
       title: "User Roles",
-      messages: req.flash(),
       users,
       user: req.user,
       currentUser: req.user,
