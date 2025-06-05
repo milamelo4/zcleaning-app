@@ -1,26 +1,37 @@
-const { 
-  createAppointment, 
-  getSchedulableClients,  
-} = require("../models/appointments-model");
-
+const fs = require("fs");
+const path = require("path");
+const { createAppointment, getSchedulableClients,} = require("../models/appointments-model");
 const { getClientsForMonth } = require("../utils/scheduleHelpers");
 
 async function previewMonthlySchedule(req, res) {
   try {
     const { year, month } = req.query;
     const currentDate = new Date();
-
     const targetYear = year ? parseInt(year) : currentDate.getFullYear();
     const targetMonth = month ? parseInt(month) : currentDate.getMonth(); // 0-based
 
-    const clients = await getSchedulableClients();
-    const { scheduledClients, unassignedClients } = getClientsForMonth(
-      clients,
-      targetYear,
-      targetMonth
-    );
+    let scheduledClients = [];
+    let unassignedClients = [];
 
-    req.session.scheduleDraft = scheduledClients;
+    const draftPath = path.join(__dirname, "..", "..", "drafts", "schedule-draft.json");
+
+    if (fs.existsSync(draftPath)) {
+      const draftData = fs.readFileSync(draftPath, "utf8");
+      const parsed = JSON.parse(draftData);
+      scheduledClients = parsed.scheduledClients || [];
+      unassignedClients = parsed.unassignedClients || [];
+
+      req.session.scheduleDraft = scheduledClients;
+      req.session.unassignedClients = unassignedClients;
+    } else {
+      const clients = await getSchedulableClients();
+      const generated = getClientsForMonth(clients, targetYear, targetMonth);
+      scheduledClients = generated.scheduledClients;
+      unassignedClients = generated.unassignedClients;
+
+      req.session.scheduleDraft = scheduledClients;
+      req.session.unassignedClients = unassignedClients;
+    }
 
     res.render("pages/appointments/monthly-preview", {
       title: "Suggested Monthly Schedule",
@@ -31,13 +42,13 @@ async function previewMonthlySchedule(req, res) {
       user: req.user,
       appointmentsJson: JSON.stringify(scheduledClients),
     });
-    
   } catch (err) {
     console.error("Error loading monthly schedule preview:", err);
     req.flash("error_msg", "Could not generate monthly schedule.");
     res.redirect("/dashboard");
   }
 }
+
 
 async function saveSuggestedSchedule(req, res) {
   try {
@@ -118,8 +129,65 @@ async function reviewSavedSchedule(req, res) {
   });
 }
 
-module.exports = { 
+function saveScheduleDraft(req, res) {
+  let appointments = [];
+
+  try {
+    appointments = JSON.parse(req.body.appointments);
+  } catch (err) {
+    console.error("Invalid appointments data:", err);
+    return res.send("Invalid appointments data.");
+  }
+
+  const scheduled = appointments.filter((c) => c.appointment_date !== null);
+  const unassigned = appointments.filter((c) => c.appointment_date === null);
+
+  const draftData = {
+    scheduledClients: scheduled,
+    unassignedClients: unassigned,
+  };
+
+  const filePath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "drafts",
+    "schedule-draft.json"
+  );
+
+  fs.writeFile(filePath, JSON.stringify(draftData, null, 2), (err) => {
+    if (err) {
+      console.error("Failed to save schedule draft:", err);
+      return res.send("Failed to save draft.");
+    }
+
+    req.flash("success_msg", "Draft saved successfully.");
+    res.redirect("/appointments/monthly-preview");
+  });
+}
+
+
+function clearScheduleDraft(req, res) {
+  const filePath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "drafts",
+    "schedule-draft.json"
+  );
+
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath); // Delete the draft
+  }
+
+  req.flash("success_msg", "Draft cleared. A new schedule will be generated.");
+  res.redirect("/appointments/monthly-preview");
+}
+
+module.exports = {
   reviewSavedSchedule,
   previewMonthlySchedule,
-  saveSuggestedSchedule
+  saveSuggestedSchedule,
+  saveScheduleDraft,
+  clearScheduleDraft,
 };

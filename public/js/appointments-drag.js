@@ -1,4 +1,6 @@
 let draggedElement = null;
+let currentSchedule = []; // array of all assigned clients
+let currentUnassigned = []; // array of unassigned clients
 
 function handleDragStart(event) {
   const clientData = event.target.getAttribute("data-client");
@@ -113,7 +115,40 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
 window.handleDragStart = handleDragStart;
 window.handleDrop = handleDrop;
 window.handleUnassignDrop = handleUnassignDrop;
+
+document
+  .getElementById("saveDraftForm")
+  .addEventListener("submit", function (e) {
+    const appointments = [];
+
+    const calendarCells = document.querySelectorAll("td[data-date]");
+
+    calendarCells.forEach((cell) => {
+      const date = cell.getAttribute("data-date");
+      const cards = cell.querySelectorAll("[data-client]");
+
+      cards.forEach((card) => {
+        const client = JSON.parse(card.getAttribute("data-client"));
+        client.appointment_date = date; // update to new date
+        appointments.push(client);
+      });
+    });
+
+    // Add back unassigned clients (optional, if you want them too)
+    const unassignedCards = document.querySelectorAll(
+      "#unassigned-list [data-client]"
+    );
+    unassignedCards.forEach((card) => {
+      const client = JSON.parse(card.getAttribute("data-client"));
+      client.appointment_date = null;
+      appointments.push(client);
+    });
+
+    // Put it in the hidden input
+    document.getElementById("appointmentsInput").value =
+      JSON.stringify(appointments);
+  });
+
