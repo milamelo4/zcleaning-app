@@ -127,14 +127,20 @@
           <form id="saveDraftForm" action="/appointments/save-draft" method="POST">
             <input type="hidden" name="appointments" id="appointmentsInput">
             <button type="submit" class="btn btn-outline-dark">
-              <i class="bi bi-save"></i> Save Draft
+              <i class="bi bi-save"></i> Save Local Draft
             </button>
           </form>
 
         <div>
-          <a href="/appointments/review" class="btn btn-primary">
-            <i class="bi bi-check-circle"></i> Save to Database 
-          </a>
+          <form id="postScheduleForm" action="/appointments/save-suggested" method="POST">
+            <input type="hidden" name="appointments" id="appointmentsInput"
+              value='<%- JSON.stringify(appointments) %>'>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-circle"></i> Save to Database
+            </button>
+          </form>
+
+
         </div>
         <form action="/appointments/clear-draft" method="POST" id="clearDraftForm">
           <button type="button" class="btn btn-outline-danger" onclick="showDeleteModal('clearDraftForm')">
@@ -146,6 +152,7 @@
 </div> 
 <%- include("../../partials/deleteModal") %>
 <script src="/js/appointments-drag.js"></script>
+<script src="/js/appointments-review.js"></script>
 
 
 

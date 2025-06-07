@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
           appointments[index].notes = input.value;
         }
       });
+      console.log("📤 Submitting appointments:", appointments);
 
       appointmentsInput.value = JSON.stringify(appointments);
     });

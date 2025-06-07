@@ -6,26 +6,30 @@ const pool = require("../config/db");
 async function getUpcomingAppointments() {
   try {
     const sql = `
-      SELECT 
-        a.appointment_id,
-        a.appointment_date,
-        a.duration_hours,
-        c.first_name,
-        c.last_name,
-        s.service_frequency
-      FROM appointments a
-      JOIN clients c ON a.client_id = c.client_id
-      JOIN service_type s ON a.service_type_id = s.service_id
-      WHERE a.appointment_date >= CURRENT_DATE
+    SELECT 
+      a.appointment_id,
+      a.appointment_date,
+      a.duration_hours,
+      c.first_name,
+      c.last_name,
+      s.service_frequency
+    FROM appointments a
+    JOIN clients c ON a.client_id = c.client_id
+    JOIN service_type s ON a.service_type_id = s.service_id
+    WHERE 
+      EXTRACT(YEAR FROM a.appointment_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+      AND EXTRACT(MONTH FROM a.appointment_date) = EXTRACT(MONTH FROM CURRENT_DATE)
       AND c.is_active_new = TRUE
-      ORDER BY a.appointment_date ASC;
-    `;
+    ORDER BY a.appointment_date ASC;
+  `;
+
     const result = await pool.query(sql);
     return result.rows;
   } catch (err) {
     throw new Error("Failed to get upcoming appointments: " + err.message);
   }
 }
+
 
 //====================================
 // Create a new appointment
@@ -92,8 +96,17 @@ async function getSchedulableClients() {
   }
 }
 
+//====================================
+// Delete an appointment
+//====================================
+async function deleteAppointmentById(id) {
+  const query = "DELETE FROM appointments WHERE appointment_id = $1";
+  await pool.query(query, [id]);
+}
+
 module.exports = { 
   getUpcomingAppointments, 
   createAppointment, 
-  getSchedulableClients 
+  getSchedulableClients,
+  deleteAppointmentById 
 };

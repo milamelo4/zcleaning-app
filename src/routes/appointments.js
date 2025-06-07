@@ -7,6 +7,7 @@ const {
   viewSavedAppointments,
   saveScheduleDraft,
   clearScheduleDraft,
+  deleteAppointment,
 } = require("../controllers/appointments-controller");
 
 // Show preview for a given month/year
@@ -23,5 +24,9 @@ router.post("/save-draft", isLoggedIn, saveScheduleDraft);
 
 // Clear the draft schedule
 router.post("/clear-draft", isLoggedIn, clearScheduleDraft);
+
+// Delete an appointment by ID
+router.post("/:id/delete", isLoggedIn, deleteAppointment);
+
 
 module.exports = router;

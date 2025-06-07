@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { createAppointment, getSchedulableClients,} = require("../models/appointments-model");
+const { createAppointment, getSchedulableClients, deleteAppointmentById, getUpcomingAppointments } = require("../models/appointments-model");
 const { getClientsForMonth } = require("../utils/scheduleHelpers");
 
 async function previewMonthlySchedule(req, res) {
@@ -102,7 +102,7 @@ async function saveFinalizedSchedule(req, res) {
     }
 
     req.flash("success_msg", "Schedule saved successfully.");
-    res.redirect("/appointments/schedule");
+    res.redirect("/appointments/review");
   } catch (err) {
     console.error("Error saving suggested schedule:", err);
     req.flash("error_msg", "Failed to save schedule.");
@@ -111,23 +111,31 @@ async function saveFinalizedSchedule(req, res) {
 }
 
 async function viewSavedAppointments(req, res) {
-  const scheduleDraft = req.session.scheduleDraft;
+  try {
+    const appointments = await getUpcomingAppointments(); // or your own DB function
 
-  if (!scheduleDraft || !Array.isArray(scheduleDraft)) {
-    req.flash("error_msg", "No schedule found to review.");
-    return res.redirect("/appointments/monthly-preview");
+    if (!appointments || appointments.length === 0) {
+      req.flash("error_msg", "No upcoming appointments found.");
+      return res.redirect("/appointments/monthly-preview");
+    }
+
+    appointments.sort(
+      (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date)
+    );
+
+    res.render("pages/appointments/review", {
+      title: "Manage Appointments",
+      appointments,
+      appointmentsJson: JSON.stringify(appointments),
+      user: req.user,
+    });
+  } catch (err) {
+    console.error("Failed to load appointments from DB:", err);
+    req.flash("error_msg", "Failed to load saved appointments.");
+    res.redirect("/appointments/monthly-preview");
   }
-  // sort by appointment date
-  scheduleDraft.sort(
-    (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date)
-  );
-  res.render("pages/appointments/review", {
-    title: "Manage Appointments",
-    appointments: scheduleDraft,
-    appointmentsJson: JSON.stringify(scheduleDraft),
-    user: req.user,
-  });
 }
+
 
 function saveScheduleDraft(req, res) {
   let appointments = [];
@@ -184,10 +192,29 @@ function clearScheduleDraft(req, res) {
   res.redirect("/appointments/monthly-preview");
 }
 
+async function deleteAppointment(req, res) {
+  try {
+    const apptId = parseInt(req.params.id);
+    if (isNaN(apptId)) {
+      req.flash("error_msg", "Invalid appointment ID.");
+      return res.redirect("/appointments/schedule");
+    }
+
+    await deleteAppointmentById(apptId);
+    req.flash("success_msg", "Appointment deleted successfully.");
+    res.redirect("/appointments/review");
+  } catch (err) {
+    console.error("Failed to delete appointment:", err);
+    req.flash("error_msg", "Something went wrong deleting the appointment.");
+    res.redirect("/appointments/review");
+  }
+}
+
 module.exports = {
   viewSavedAppointments,
   previewMonthlySchedule,
   saveFinalizedSchedule,
   saveScheduleDraft,
   clearScheduleDraft,
+  deleteAppointment,
 };
