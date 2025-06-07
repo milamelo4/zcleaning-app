@@ -90,8 +90,11 @@
             <!-- Accordion content OUTSIDE card-body -->
             <div id="collapse-<%= client.client_id %>"
               class="accordion-collapse collapse border-top p-3">
+              <p class="card-text mb-1"><strong>Hire Date:</strong>
+                <%= client.hired_date ? new Date(client.hired_date).toLocaleDateString() : '—' %>
+              </p>
               <p class="card-text mb-1"><strong>Service:</strong>
-                <%= client.service_frequency || 'N/A' %>
+                <%= client.service_frequency.replace(/_/g, " " ) %>
               </p>
               <p class="card-text mb-1"><strong>Preferred Day:</strong>
                 <%= client.preferred_day %>

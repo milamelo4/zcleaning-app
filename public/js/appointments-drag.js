@@ -46,11 +46,10 @@ function handleUnassignDrop(event) {
       " "
     )}</span><br>
     <small class="text-muted">Last cleaned: ${
-      client.last_appointment_date
-        ? new Date(client.last_appointment_date).toLocaleDateString("en-US")
+      client.true_last_cleaned_date
+        ? new Date(client.true_last_cleaned_date).toLocaleDateString("en-US")
         : "No history"
-    }</small>
-    
+    }</small>    
   `;
   container.appendChild(card);
 }
@@ -83,10 +82,8 @@ function handleDrop(event, date) {
       " "
     )}</span><br>
     <small class="text-muted">Last cleaned: ${
-      client.appointment_date
-        ? new Date(`${client.appointment_date}T00:00:00`).toLocaleDateString(
-            "en-US"
-          )
+      client.true_last_cleaned_date
+        ? new Date(client.true_last_cleaned_date).toLocaleDateString("en-US")
         : "No history"
     }</small><br>
   `;

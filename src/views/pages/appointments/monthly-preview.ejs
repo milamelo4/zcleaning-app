@@ -14,21 +14,27 @@
             ondragover="event.preventDefault()" ondrop="handleUnassignDrop(event)">
 
             <% unassignedClients.forEach(function(client) { %>
-                <div id="unassigned-<%= client.client_id %>" 
-                    class="p-2 border rounded bg-light shadow-sm" style="min-width: 180px;"
-                    draggable="true" ondragstart="handleDragStart(event)"
-                    data-client='<%- JSON.stringify(client) %>'>
-           
-                    <strong><%= client.first_name %> <%= client.last_name %></strong><br>
-                    <small class="text-success">Hours: <%= client.duration_hours %></small><br>
-                    <span class="badge bg-warning text-dark"><%= client.service_frequency.replace(/_/g, " ") %></span><br>
-                    <small class="text-muted">Last cleaned: 
-                    <%= client.last_appointment_date 
-                        ? new Date(client.last_appointment_date).toLocaleDateString("en-US") 
-                        : "No history" %>
-                    </small>
+              <div id="unassigned-<%= client.client_id %>"
+                class="p-2 border rounded bg-light shadow-sm" style="min-width: 180px;"
+                draggable="true" ondragstart="handleDragStart(event)"
+                data-client='<%- JSON.stringify({ ...client, true_last_cleaned_date: client.true_last_cleaned_date }) %>'>
+                <strong>
+                  <%= client.first_name %>
+                    <%= client.last_name %>
+                </strong><br>
+                <small class="text-success">Hours: <%= client.duration_hours %></small><br>
+                <span class="badge bg-warning text-dark">
+                  <%= client.service_frequency.replace(/_/g, " " ) %>
+                </span><br>
+                <small class="text-muted">Last cleaned:
+                  <%= client.true_last_cleaned_date ? new
+                    Date(client.true_last_cleaned_date).toLocaleDateString("en-US") : "No history"
+                    %>
+
+                </small>
               </div>
-            <% }); %>
+              <% }); %>
+            
           </div>
         </div>
  
@@ -87,25 +93,25 @@
                         </span> hrs
                     </small>
 
-                      <% appointmentsForDay.forEach(function(a) { %>
-                        <div class="p-2 bg-light border rounded mb-1 shadow-sm" draggable="true"
-                            ondragstart="handleDragStart(event)" data-client='<%- JSON.stringify(a) %>'>
+                    <% appointmentsForDay.forEach(function(a) { %>
+                      <div class="p-2 bg-light border rounded mb-1 shadow-sm" draggable="true"
+                          ondragstart="handleDragStart(event)" 
+                          data-client='<%- JSON.stringify({ ...a, true_last_cleaned_date: a.true_last_cleaned_date }) %>'>
+                        <strong><%= a.first_name %> <%= a.last_name %></strong><br> 
+                        <small class="text-success border-outline-success">Hours: <%= a.duration_hours %></small><br>
+                        <span class="badge bg-warning text-dark">
+                          <%= a.service_frequency.replace(/_/g, " ") %>
+                        </span><br>
+                        <% if (a.true_last_cleaned_date) { %>
+                          <small class="text-muted">Last cleaned:
+                            <%= new Date(a.true_last_cleaned_date).toLocaleDateString("en-US") %>
+                          </small>
+                        <% } else { %>
+                          <small class="text-muted">No history</small>
+                        <% } %>
+                      </div>
+                    <% }); %>
 
-                          <strong><%= a.first_name %> <%= a.last_name %></strong><br> 
-                          <small class="text-success border-outline-success">Hours: <%= a.duration_hours %></small>                          
-                          <br>
-                          <span class="badge bg-warning text-dark">
-                            <%= a.service_frequency.replace(/_/g, " ") %>
-                          </span><br>
-                          <% if (a.last_appointment_date) { %>
-                            <small class="text-muted">Last cleaned: 
-                              <%= new Date(a.last_appointment_date).toLocaleDateString("en-US") %>
-                            </small>
-                          <% } else { %>
-                            <small class="text-muted">No history</small>
-                          <% } %>
-                        </div>
-                      <% }); %>
                     <% } %>
                   </td>
                 <% }); %>
@@ -127,7 +133,7 @@
 
         <div>
           <a href="/appointments/review" class="btn btn-primary">
-            <i class="bi bi-check-circle"></i> Review & Post Final Schedule →
+            <i class="bi bi-check-circle"></i> Save to Database 
           </a>
         </div>
         <form action="/appointments/clear-draft" method="POST" id="clearDraftForm">

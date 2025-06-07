@@ -50,7 +50,7 @@ async function previewMonthlySchedule(req, res) {
 }
 
 
-async function saveSuggestedSchedule(req, res) {
+async function saveFinalizedSchedule(req, res) {
   try {
     const raw = req.body.appointments;
     //console.log("Raw input:", raw);
@@ -110,7 +110,7 @@ async function saveSuggestedSchedule(req, res) {
   }
 }
 
-async function reviewSavedSchedule(req, res) {
+async function viewSavedAppointments(req, res) {
   const scheduleDraft = req.session.scheduleDraft;
 
   if (!scheduleDraft || !Array.isArray(scheduleDraft)) {
@@ -122,7 +122,7 @@ async function reviewSavedSchedule(req, res) {
     (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date)
   );
   res.render("pages/appointments/review", {
-    title: "Review Final Schedule",
+    title: "Manage Appointments",
     appointments: scheduleDraft,
     appointmentsJson: JSON.stringify(scheduleDraft),
     user: req.user,
@@ -185,9 +185,9 @@ function clearScheduleDraft(req, res) {
 }
 
 module.exports = {
-  reviewSavedSchedule,
+  viewSavedAppointments,
   previewMonthlySchedule,
-  saveSuggestedSchedule,
+  saveFinalizedSchedule,
   saveScheduleDraft,
   clearScheduleDraft,
 };

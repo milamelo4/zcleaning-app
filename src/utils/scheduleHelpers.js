@@ -126,16 +126,22 @@ function getClientsForMonth(clients, year, month) {
       if (hoursForThisDay + parseFloat(client.duration_hours || 0) > 28) {
         return; // Skip this client, day is full
       }
+
       if (!client.price) {
         client.price = parseFloat(client.service_price || 0);
       }
-      // Otherwise, proceed to schedule
+
+      // Set the true last cleaned date before pushing to the schedule
+      client.true_last_cleaned_date = virtualLastDates[client.client_id];
+
       scheduledClients.push(client);
+
       hoursPerDay[date] = hoursForThisDay + parseFloat(client.duration_hours);
-    
-      // Update the client's virtual last appointment
+
+      // Update the virtual last appointment date (used only for spacing logic)
       virtualLastDates[client.client_id] = client.appointment_date;
     });
+    
   }
 
     // After collecting all scheduled clients, find unassigned ones
