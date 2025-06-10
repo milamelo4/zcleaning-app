@@ -12,6 +12,7 @@ async function getUpcomingAppointments() {
       a.duration_hours,
       c.first_name,
       c.last_name,
+      c.price,
       s.service_frequency
     FROM appointments a
     JOIN clients c ON a.client_id = c.client_id
@@ -104,9 +105,55 @@ async function deleteAppointmentById(id) {
   await pool.query(query, [id]);
 }
 
+//====================================
+// Get appointments by date
+//====================================
+async function getAppointmentsByDate(date) {
+  const query = `
+    SELECT a.*, c.first_name, c.last_name
+    FROM appointments a
+    JOIN clients c ON a.client_id = c.client_id
+    WHERE a.appointment_date = $1
+    ORDER BY a.appointment_date ASC
+  `;
+  const result = await pool.query(query, [date]);
+  return result.rows;
+}
+
+//====================================
+// Get appointments by date range
+//====================================
+async function getAppointmentsByRange(startDate, endDate) {
+  const query = `
+  SELECT a.*, c.first_name, c.last_name
+  FROM appointments a
+  JOIN clients c ON a.client_id = c.client_id
+  WHERE a.appointment_date >= $1::date AND a.appointment_date <= $2::date
+  ORDER BY a.appointment_date ASC
+`;
+  const result = await pool.query(query, [startDate, endDate]);
+  return result.rows;
+}
+
+//====================================
+// Update appointment details
+//====================================
+async function updateAppointmentDetails(id, price, notes) {
+  const query = `
+    UPDATE appointments
+    SET price = $1,
+        notes = $2
+    WHERE appointment_id = $3
+  `;
+  await pool.query(query, [price, notes, id]);
+}
+
 module.exports = { 
   getUpcomingAppointments, 
   createAppointment, 
   getSchedulableClients,
-  deleteAppointmentById 
-};
+  deleteAppointmentById,
+  getAppointmentsByDate,
+  getAppointmentsByRange,
+  updateAppointmentDetails 
+}

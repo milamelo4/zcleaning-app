@@ -1,0 +1,41 @@
+<div class="d-flex min-vh-100">
+    <%- include("../../partials/sidebar") %>
+  
+    <div class="flex-grow-1 px-3 py-4" style="min-width: 0;">
+      <h1><%= title %></h1>
+  
+      <% if (payments && payments.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="table-info">
+              <tr>
+                <th>Client</th>
+                <th>Payment Type</th>
+                <th>Schedule</th>
+                <th>Due Date</th>
+                <th>Received Date</th>
+                <th>Expected</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% payments.forEach(p => { %>
+                <tr class="<%= p.received_date ? '' : 'table-warning' %>">
+                  <td><%= p.first_name %> <%= p.last_name %></td>
+                  <td><%= p.payment_type %></td>
+                  <td><%= p.payment_schedule %></td>
+                  <td><%= p.due_date ? new Date(p.due_date).toLocaleDateString() : '—' %></td>
+                  <td><%= p.received_date ? new Date(p.received_date).toLocaleDateString() : '—' %></td>
+                  <td><%= p.expected_received_date ? new Date(p.expected_received_date).toLocaleDateString() : '—' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p>No payments found.</p>
+      <% } %>
+  
+      <a href="/dashboard" class="btn btn-outline-secondary mt-4">← Back to Dashboard</a>
+    </div>
+  </div>
+  

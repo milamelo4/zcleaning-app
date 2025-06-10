@@ -10,6 +10,7 @@ const {
   markPaymentAsReceived,
   unmarkPaymentAsReceived,
   findClientByNameAndPhone,
+  getAllPayments,
 } = require("../models/clients-model");
 
 const {
@@ -18,7 +19,6 @@ const {
   getAddressByClientId,
 } = require("../models/address-model");
 
-// Capitalize first letter, lowercase the rest
 function formatName(name) {
   return name.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
 }
@@ -92,8 +92,6 @@ async function postNewClient(req, res) {
     });
   }
 }
-
-
 
 async function showAddClientForm(req, res) {
   try {
@@ -338,6 +336,23 @@ async function unmarkPaymentReceivedController(req, res) {
   }
 }
 
+async function showAllPayments(req, res) {
+  try {
+    const allPayments = await getAllPayments();
+
+    res.render("pages/clients/all-payments", {
+      title: "All Payments",
+      user: req.user,
+      payments: allPayments,
+      messages: req.flash(),
+    });
+  } catch (err) {
+    console.error("Failed to load all payments:", err);
+    req.flash("error_msg", "Failed to load payment data.");
+    res.redirect("/dashboard");
+  }
+}
+
 module.exports = {
   postNewClient,
   showAddClientForm,
@@ -349,4 +364,5 @@ module.exports = {
   showMissingPayments,
   markPaymentReceivedController,
   unmarkPaymentReceivedController,
+  showAllPayments,
 };

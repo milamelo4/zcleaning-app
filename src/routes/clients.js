@@ -12,6 +12,8 @@ const {
   showMissingPayments,
   markPaymentReceivedController,
   unmarkPaymentReceivedController,
+  showAllPayments,
+
 } = require("../controllers/clients-controller");
 
 const validateClient = require("../validations/client-validation");
@@ -55,5 +57,7 @@ router.post(
   unmarkPaymentReceivedController
 );
 
-  
+// route to show client payments
+router.get("/all-payments", isLoggedIn, showAllPayments);  
+
 module.exports = router;

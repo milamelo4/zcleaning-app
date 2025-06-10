@@ -1,4 +1,3 @@
-// insert new client
 const pool = require("../config/db.js");
 
 //====================================
@@ -106,7 +105,6 @@ async function getTotalClients() {
     throw new Error("Failed to count clients: " + err.message);
   }
 }
-
 
 //====================================
 // Delete a client by ID  
@@ -220,7 +218,7 @@ async function getAllPaymentTypes(clientId) {
       cp.due_date, 
       cp.received_date,
       cp.expected_received_date,
-      (cp.received_date IS NULL AND cp.due_date < CURRENT_DATE) AS is_overdue,
+      (cp.received_date IS NULL AND cp.expected_received_date < CURRENT_DATE) AS is_overdue,
       c.first_name, 
       c.last_name, 
       c.price 
@@ -244,23 +242,23 @@ async function getAllMissingPayments() {
   try {
     const sql = `
       SELECT 
-        cp.payment_id,
-        cp.payment_type,
-        cp.payment_schedule,
-        cp.due_date,
-        cp.received_date,
-        cp.expected_received_date,
-        (cp.received_date IS NULL AND cp.due_date < CURRENT_DATE) AS is_overdue,
-        c.client_id,
-        c.first_name,
-        c.last_name,
-        c.price
-      FROM client_payment cp
-      JOIN clients c ON cp.client_id = c.client_id
-      WHERE cp.received_date IS NULL
-        AND cp.due_date < CURRENT_DATE
-      ORDER BY cp.due_date DESC
-    `;
+      cp.payment_id,
+      cp.payment_type,
+      cp.payment_schedule,
+      cp.due_date,
+      cp.received_date,
+      cp.expected_received_date,
+      (cp.received_date IS NULL AND cp.expected_received_date < CURRENT_DATE) AS is_overdue,
+      c.client_id,
+      c.first_name,
+      c.last_name,
+      c.price
+    FROM client_payment cp
+    JOIN clients c ON cp.client_id = c.client_id
+    WHERE cp.received_date IS NULL
+      AND cp.expected_received_date < CURRENT_DATE
+    ORDER BY cp.expected_received_date DESC;
+  `;
 
     const result = await pool.query(sql);
     return result.rows;
@@ -268,7 +266,6 @@ async function getAllMissingPayments() {
     throw new Error("Failed to get missing payments: " + err.message);
   }
 }
-
 //====================================
 // Mark payment as received
 //====================================
@@ -303,6 +300,68 @@ async function unmarkPaymentAsReceived(paymentId, clientId) {
   }
 }
 
+//====================================
+// Insert payment if it doesn't exist for the given client and appointment date
+//====================================
+async function insertPaymentIfNeeded(client_id, appointment_date) {
+  const sqlCheck = `
+  SELECT * FROM client_payment
+  WHERE client_id = $1 AND due_date = $2`;
+
+  const due_date = new Date(appointment_date);
+  const existing = await pool.query(sqlCheck, [client_id, due_date]);
+
+  if (existing.rows.length === 0) {
+    const due_date = new Date(appointment_date);
+    const expected_received_date = new Date(appointment_date);
+    expected_received_date.setDate(expected_received_date.getDate() + 7);
+
+    const sqlInsert = `
+      INSERT INTO client_payment (
+        client_id,
+        payment_type,
+        payment_schedule,
+        due_date,
+        expected_received_date
+      ) VALUES ($1, $2, $3, $4, $5)
+    `;
+
+    await pool.query(sqlInsert, [
+      client_id,
+      "cash", // default value; update later if needed
+      "monthly", // or dynamic in the future
+      due_date,
+      expected_received_date,
+    ]);
+  }
+}
+
+//====================================
+// Show all payments
+//====================================
+// In models/clients-model.js
+async function getAllPayments() {
+  const sql = `
+    SELECT 
+      cp.payment_id,
+      cp.payment_type,
+      cp.payment_schedule,
+      cp.due_date,
+      cp.received_date,
+      cp.expected_received_date,
+      c.first_name,
+      c.last_name,
+      c.client_id
+    FROM client_payment cp
+    JOIN clients c ON cp.client_id = c.client_id
+    ORDER BY cp.due_date DESC
+  `;
+
+  const result = await pool.query(sql);
+  return result.rows;
+}
+
+
 module.exports = {
   createClient,
   getServiceTypes,
@@ -316,4 +375,6 @@ module.exports = {
   unmarkPaymentAsReceived,
   findClientByNameAndPhone,
   getTotalClients,
-};
+  insertPaymentIfNeeded,
+  getAllPayments  ,
+}

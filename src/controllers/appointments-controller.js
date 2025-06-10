@@ -1,7 +1,15 @@
 const fs = require("fs");
 const path = require("path");
-const { createAppointment, getSchedulableClients, deleteAppointmentById, getUpcomingAppointments } = require("../models/appointments-model");
+const {
+  createAppointment,
+  getSchedulableClients,
+  deleteAppointmentById,
+  updateAppointmentDetails,
+  getAppointmentsByDate,
+  getAppointmentsByRange,
+} = require("../models/appointments-model");
 const { getClientsForMonth } = require("../utils/scheduleHelpers");
+const { insertPaymentIfNeeded } = require("../models/clients-model"); // adjust path if needed
 
 async function previewMonthlySchedule(req, res) {
   try {
@@ -99,7 +107,10 @@ async function saveFinalizedSchedule(req, res) {
         price,
         notes,
       });
+      await insertPaymentIfNeeded(client_id, appt.appointment_date);
     }
+
+    
 
     req.flash("success_msg", "Schedule saved successfully.");
     res.redirect("/appointments/review");
@@ -112,12 +123,31 @@ async function saveFinalizedSchedule(req, res) {
 
 async function viewSavedAppointments(req, res) {
   try {
-    const appointments = await getUpcomingAppointments(); // or your own DB function
+    const { month, date } = req.query;
+    let appointments = [];
+
+    if (date) {
+      // Specific day filter
+      appointments = await getAppointmentsByDate(date);
+    } else if (month) {
+      // Month filter
+      const year = parseInt(month.split("-")[0]);
+      const monthIndex = parseInt(month.split("-")[1]);
+      const firstDay = new Date(year, monthIndex - 1, 1);
+      const lastDay = new Date(year, monthIndex, 0); // last day of that month
+
+      appointments = await getAppointmentsByRange(firstDay, lastDay);
+    } else {
+      // Default to current month
+      const today = new Date();
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      appointments = await getAppointmentsByRange(firstDay, lastDay);
+    }
 
     if (!appointments || appointments.length === 0) {
-      req.flash("error_msg", "No upcoming appointments found.");
-      return res.redirect("/appointments/monthly-preview");
-    }
+      req.flash("error_msg", "No appointments found for selected period.");
+    }    
 
     appointments.sort(
       (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date)
@@ -128,14 +158,15 @@ async function viewSavedAppointments(req, res) {
       appointments,
       appointmentsJson: JSON.stringify(appointments),
       user: req.user,
+      selectedMonth: month || "",
+      selectedDate: date || "",
     });
   } catch (err) {
-    console.error("Failed to load appointments from DB:", err);
-    req.flash("error_msg", "Failed to load saved appointments.");
-    res.redirect("/appointments/monthly-preview");
+    console.error("Failed to load appointments:", err);
+    req.flash("error_msg", "Failed to load appointments.");
+    res.redirect("/appointments/review");
   }
 }
-
 
 function saveScheduleDraft(req, res) {
   let appointments = [];
@@ -174,7 +205,6 @@ function saveScheduleDraft(req, res) {
   });
 }
 
-
 function clearScheduleDraft(req, res) {
   const filePath = path.join(
     __dirname,
@@ -197,7 +227,7 @@ async function deleteAppointment(req, res) {
     const apptId = parseInt(req.params.id);
     if (isNaN(apptId)) {
       req.flash("error_msg", "Invalid appointment ID.");
-      return res.redirect("/appointments/schedule");
+      return res.redirect("/appointments/review");
     }
 
     await deleteAppointmentById(apptId);
@@ -210,6 +240,28 @@ async function deleteAppointment(req, res) {
   }
 }
 
+async function updateAppointment(req, res) {
+  try {
+    const appointment_id = parseInt(req.params.id);
+    const price = parseFloat(req.body.price);
+    const notes = req.body.notes || null;
+
+    if (isNaN(appointment_id) || isNaN(price)) {
+      req.flash("error_msg", "Invalid appointment data.");
+      return res.redirect("/appointments/review");
+    }
+
+    await updateAppointmentDetails(appointment_id, price, notes);
+    req.flash("success_msg", "Appointment updated.");
+    res.redirect("/appointments/review");
+  } catch (err) {
+    console.error("Failed to update appointment:", err);
+    req.flash("error_msg", "Failed to update appointment.");
+    res.redirect("/appointments/review");
+  }
+}
+
+
 module.exports = {
   viewSavedAppointments,
   previewMonthlySchedule,
@@ -217,4 +269,5 @@ module.exports = {
   saveScheduleDraft,
   clearScheduleDraft,
   deleteAppointment,
+  updateAppointment,
 };

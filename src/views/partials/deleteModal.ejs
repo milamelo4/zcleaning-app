@@ -22,21 +22,30 @@
   </div>
   
   <script>
+    // Put this outside of DOMContentLoaded
     let deleteFormToSubmit;
-  
+
     function showDeleteModal(formId) {
       deleteFormToSubmit = document.getElementById(formId);
       const modal = new bootstrap.Modal(document.getElementById("confirmModal"));
       modal.show();
     }
-  
+
     document.addEventListener("DOMContentLoaded", () => {
       const confirmBtn = document.getElementById("confirmDeleteBtn");
+
       if (confirmBtn) {
         confirmBtn.addEventListener("click", () => {
-          if (deleteFormToSubmit) deleteFormToSubmit.submit();
+          if (deleteFormToSubmit) {
+            deleteFormToSubmit.submit();
+            deleteFormToSubmit = null;
+          } else {
+            console.warn("No form to submit");
+          }
         });
       }
     });
   </script>
+  
+  
   
