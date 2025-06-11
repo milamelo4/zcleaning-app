@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --------- Handle date search filter ---------
+  // --------- Handle date search filter ---------
   const dateInput = document.getElementById("dateInput");
 
   if (dateInput && rows.length > 0) {
@@ -69,9 +70,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const selectedDate = dateInput.value;
 
       rows.forEach((row) => {
-        const apptDate = row.querySelectorAll("td")[1]?.textContent.trim();
+        const apptDate = row.querySelectorAll("td")[4]?.textContent.trim(); // due date is in column 5 (index 4)
+        const formattedApptDate = new Date(apptDate)
+          .toISOString()
+          .split("T")[0];
+
         row.style.display =
-          selectedDate && !apptDate.includes(selectedDate) ? "none" : "";
+          selectedDate && selectedDate !== formattedApptDate ? "none" : "";
       });
     });
   }

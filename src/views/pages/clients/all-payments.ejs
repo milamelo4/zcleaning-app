@@ -3,6 +3,20 @@
   
     <div class="flex-grow-1 px-3 py-4" style="min-width: 0;">
       <h1><%= title %></h1>
+      <!-- Filters -->
+      <div class="d-flex gap-3 align-items-end mb-3">
+        <div>
+          <label for="searchInput" class="form-label">Search Client</label>
+          <input type="text" id="searchInput" class="form-control"
+            placeholder="Type a client name...">
+        </div>
+        <div>
+          <label for="dateInput" class="form-label">Filter by Due Date</label>
+          <input type="date" id="dateInput" class="form-control">
+        </div>
+        <div class="btn btn-primary" onclick="window.print()">Print</div>
+      </div>
+
   
       <% if (payments && payments.length > 0) { %>
         <div class="table-responsive">
@@ -40,4 +54,5 @@
       <a href="/dashboard" class="btn btn-outline-secondary mt-4">← Back to Dashboard</a>
     </div>
   </div>
+<script src="/js/appointments-review.js"></script>
   

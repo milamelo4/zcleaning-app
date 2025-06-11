@@ -9,7 +9,8 @@ const {
   getAppointmentsByRange,
 } = require("../models/appointments-model");
 const { getClientsForMonth } = require("../utils/scheduleHelpers");
-const { insertPaymentIfNeeded } = require("../models/clients-model"); // adjust path if needed
+const { generateWhatsappSchedule } = require("../utils/formatWhatsappMessage");
+const { insertPaymentIfNeeded } = require("../models/clients-model"); 
 
 async function previewMonthlySchedule(req, res) {
   try {
@@ -146,11 +147,13 @@ async function viewSavedAppointments(req, res) {
     appointments.sort(
       (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date)
     );
+    const whatsappMessage = generateWhatsappSchedule(appointments);
 
     res.render("pages/appointments/review", {
       title: "Manage Appointments",
       appointments,
       appointmentsJson: JSON.stringify(appointments),
+      whatsappMessage,
       user: req.user,
       selectedDate: date || "", // only need selectedDate now
     });
