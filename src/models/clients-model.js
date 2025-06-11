@@ -304,42 +304,52 @@ async function unmarkPaymentAsReceived(paymentId, clientId) {
 // Insert payment if it doesn't exist for the given client and appointment date
 //====================================
 async function insertPaymentIfNeeded(client_id, appointment_date) {
-  const sqlCheck = `
-  SELECT * FROM client_payment
-  WHERE client_id = $1 AND due_date = $2`;
+  // Convert appointment_date to plain YYYY-MM-DD string
+  const due_date = new Date(appointment_date).toISOString().slice(0, 10);
 
-  const due_date = new Date(appointment_date);
+  // Check if payment for this client and date already exists
+  const sqlCheck = `
+    SELECT 1 FROM client_payment
+    WHERE client_id = $1 AND due_date = $2
+    LIMIT 1
+  `;
   const existing = await pool.query(sqlCheck, [client_id, due_date]);
 
-  if (existing.rows.length === 0) {
-    const due_date = new Date(appointment_date);
-    const expected_received_date = new Date(appointment_date);
-    expected_received_date.setDate(expected_received_date.getDate() + 7);
-
-    const sqlInsert = `
-      INSERT INTO client_payment (
-        client_id,
-        payment_type,
-        payment_schedule,
-        due_date,
-        expected_received_date
-      ) VALUES ($1, $2, $3, $4, $5)
-    `;
-
-    await pool.query(sqlInsert, [
-      client_id,
-      "cash", // default value; update later if needed
-      "monthly", // or dynamic in the future
-      due_date,
-      expected_received_date,
-    ]);
+  if (existing.rowCount > 0) {
+    console.log(
+      `Skipped: payment already exists for client ${client_id} on ${due_date}`
+    );
+    return;
   }
+
+  // Calculate expected received date (7 days after due date)
+  const expectedDateObj = new Date(appointment_date);
+  expectedDateObj.setDate(expectedDateObj.getDate() + 7);
+  const expected_received_date = expectedDateObj.toISOString().slice(0, 10);
+
+  // Insert new payment
+  const sqlInsert = `
+    INSERT INTO client_payment (
+      client_id,
+      payment_type,
+      payment_schedule,
+      due_date,
+      expected_received_date
+    ) VALUES ($1, $2, $3, $4, $5)
+  `;
+  await pool.query(sqlInsert, [
+    client_id,
+    "cash", // default value
+    "monthly", // hardcoded for now
+    due_date,
+    expected_received_date,
+  ]);
 }
+
 
 //====================================
 // Show all payments
 //====================================
-// In models/clients-model.js
 async function getAllPayments() {
   const sql = `
     SELECT 
@@ -349,17 +359,20 @@ async function getAllPayments() {
       cp.due_date,
       cp.received_date,
       cp.expected_received_date,
+      a.price,
       c.first_name,
       c.last_name,
       c.client_id
     FROM client_payment cp
     JOIN clients c ON cp.client_id = c.client_id
-    ORDER BY cp.due_date DESC
+    JOIN appointments a ON cp.client_id = a.client_id AND cp.due_date = a.appointment_date
+    ORDER BY cp.due_date ASC
   `;
 
   const result = await pool.query(sql);
   return result.rows;
 }
+
 
 
 module.exports = {
@@ -376,5 +389,5 @@ module.exports = {
   findClientByNameAndPhone,
   getTotalClients,
   insertPaymentIfNeeded,
-  getAllPayments  ,
+  getAllPayments,
 }

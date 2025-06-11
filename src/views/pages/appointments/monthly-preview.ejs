@@ -7,7 +7,24 @@
         <% const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]; %>
         <strong><%= monthNames[month] %> <%= year %></strong>
       </p>
-  
+      <div class="d-flex justify-content-end mb-4">
+        <div class="d-flex gap-3 align-items-end">
+          <form id="saveDraftForm" action="/appointments/save-draft" method="POST">
+            <input type="hidden" name="appointments" id="draftAppointmentsInput">
+            <button type="submit" class="btn btn-outline-dark">
+              <i class="bi bi-save"></i> Save Local Draft
+            </button>
+          </form>
+          <form id="postScheduleForm" action="/appointments/save-suggested"
+            method="POST">
+            <input type="hidden" name="appointments" id="appointmentsInput"
+              value='<%- JSON.stringify(appointments) %>'>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-circle"></i> Save to Database
+            </button>
+          </form>
+        </div>      
+      </div>
         <div class="mb-4">
           <h5>Unassigned Clients</h5>
         <div id="unassigned-list" class="d-flex flex-wrap gap-3"
@@ -122,26 +139,8 @@
       </div>  
       <div class="d-flex flex-wrap gap-3 mt-4">
         <a href="#" class="btn btn-outline-secondary">
-          <i class="bi bi-arrow-up"></i> Top</a>
-      
-          <form id="saveDraftForm" action="/appointments/save-draft" method="POST">
-            <input type="hidden" name="appointments" id="appointmentsInput">
-            <button type="submit" class="btn btn-outline-dark">
-              <i class="bi bi-save"></i> Save Local Draft
-            </button>
-          </form>
-
-        <div>
-          <form id="postScheduleForm" action="/appointments/save-suggested" method="POST">
-            <input type="hidden" name="appointments" id="appointmentsInput"
-              value='<%- JSON.stringify(appointments) %>'>
-            <button type="submit" class="btn btn-primary">
-              <i class="bi bi-check-circle"></i> Save to Database
-            </button>
-          </form>
-
-
-        </div>
+          <i class="bi bi-arrow-up"></i> Top</a>      
+          
         <form action="/appointments/clear-draft" method="POST" id="clearDraftForm">
           <button type="button" class="btn btn-outline-danger" onclick="showDeleteModal('clearDraftForm')">
             <i class="bi bi-trash3"></i> Clear Draft
@@ -150,6 +149,7 @@
       </div>
     </div>
 </div> 
+
 <%- include("../../partials/deleteModal") %>
 <script src="/js/appointments-drag.js"></script>
 <script src="/js/appointments-review.js"></script>

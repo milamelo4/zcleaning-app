@@ -35,34 +35,47 @@ async function getUpcomingAppointments() {
 //====================================
 // Create a new appointment
 //====================================
-async function createAppointment(data) {
-  try {
-    const sql = `
-      INSERT INTO appointments (
-        client_id,
-        appointment_date,
-        service_type_id,
-        duration_hours,
-        price,
-        notes
-      ) VALUES ($1, $2, $3, $4, $5, $6)
-    `;
+async function createAppointment(appointment) {
+  const {
+    client_id,
+    appointment_date,
+    service_type_id,
+    duration_hours,
+    price,
+    notes,
+  } = appointment;
 
-    const params = [
-      data.client_id,
-      data.appointment_date,
-      data.service_type_id,
-      data.duration_hours,
-      data.price,
-      data.notes,
-    ];
+  // Step 1: Check for existing appointment
+  const existsQuery = `
+    SELECT 1 FROM appointments
+    WHERE client_id = $1 AND appointment_date = $2
+    LIMIT 1
+  `;
+  const existsResult = await pool.query(existsQuery, [
+    client_id,
+    appointment_date,
+  ]);
 
-    const result = await pool.query(sql + " RETURNING appointment_id", params);
-    return result.rows[0].appointment_id;
-  } catch (err) {
-    throw new Error("Failed to insert appointment: " + err.message);
+  if (existsResult.rowCount > 0) {
+        return; // skip insert
   }
+
+  // Step 2: Insert appointment
+  const insertQuery = `
+    INSERT INTO appointments
+      (client_id, appointment_date, service_type_id, duration_hours, price, notes)
+    VALUES ($1, $2, $3, $4, $5, $6)
+  `;
+  await pool.query(insertQuery, [
+    client_id,
+    appointment_date,
+    service_type_id,
+    duration_hours,
+    price,
+    notes,
+  ]);
 }
+
 
 //====================================
 // Get all schedulable clients

@@ -11,10 +11,11 @@
               <tr>
                 <th>Client</th>
                 <th>Payment Type</th>
+                <th>Price</th>
                 <th>Schedule</th>
                 <th>Due Date</th>
-                <th>Received Date</th>
                 <th>Expected</th>
+                <th>Received Date</th>             
               </tr>
             </thead>
             <tbody>
@@ -22,10 +23,11 @@
                 <tr class="<%= p.received_date ? '' : 'table-warning' %>">
                   <td><%= p.first_name %> <%= p.last_name %></td>
                   <td><%= p.payment_type %></td>
+                  <td>$<%= p.price ? Number(p.price).toFixed(2) : '0.00' %></td>
                   <td><%= p.payment_schedule %></td>
                   <td><%= p.due_date ? new Date(p.due_date).toLocaleDateString() : '—' %></td>
-                  <td><%= p.received_date ? new Date(p.received_date).toLocaleDateString() : '—' %></td>
                   <td><%= p.expected_received_date ? new Date(p.expected_received_date).toLocaleDateString() : '—' %></td>
+                  <td><%= p.received_date ? new Date(p.received_date).toLocaleDateString() : '—' %></td>
                 </tr>
               <% }) %>
             </tbody>

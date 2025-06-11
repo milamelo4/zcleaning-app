@@ -7,7 +7,10 @@ exports.dashboard = async (req, res) => {
     const totalAppointments = await getAppointmentsThisMonth();
     const missingPayments = await getTotalAllMissingPayments();
     const monthlyRevenue = await getMonthlyRevenue();
-
+    const totalFormat = monthlyRevenue.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
 
     res.render("pages/dashboard", {
       title: "Dashboard",
@@ -15,7 +18,7 @@ exports.dashboard = async (req, res) => {
       totalClients,
       totalAppointments,
       missingPayments,
-      monthlyRevenue
+      monthlyRevenue: totalFormat,
     });
   } catch (err) {
     console.error("Dashboard error:", err);

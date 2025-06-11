@@ -145,7 +145,7 @@ document
     });
 
     // Put it in the hidden input
-    document.getElementById("appointmentsInput").value =
+    document.getElementById("draftAppointmentsInput").value =
       JSON.stringify(appointments);
   });
 

@@ -93,9 +93,10 @@ async function saveFinalizedSchedule(req, res) {
         isNaN(client_id) ||
         isNaN(service_type_id) ||
         isNaN(duration_hours) ||
-        isNaN(price)
+        isNaN(price) ||
+        !appt.appointment_date 
       ) {
-        console.error("Skipping invalid appointment:", appt);
+        //console.error("Skipping invalid appointment:", appt);
         continue;
       }
 
@@ -123,20 +124,12 @@ async function saveFinalizedSchedule(req, res) {
 
 async function viewSavedAppointments(req, res) {
   try {
-    const { month, date } = req.query;
+    const { date } = req.query;
     let appointments = [];
 
     if (date) {
       // Specific day filter
       appointments = await getAppointmentsByDate(date);
-    } else if (month) {
-      // Month filter
-      const year = parseInt(month.split("-")[0]);
-      const monthIndex = parseInt(month.split("-")[1]);
-      const firstDay = new Date(year, monthIndex - 1, 1);
-      const lastDay = new Date(year, monthIndex, 0); // last day of that month
-
-      appointments = await getAppointmentsByRange(firstDay, lastDay);
     } else {
       // Default to current month
       const today = new Date();
@@ -145,9 +138,10 @@ async function viewSavedAppointments(req, res) {
       appointments = await getAppointmentsByRange(firstDay, lastDay);
     }
 
-    if (!appointments || appointments.length === 0) {
-      req.flash("error_msg", "No appointments found for selected period.");
-    }    
+    if ((!appointments || appointments.length === 0) && date) {
+      req.flash("error_msg", "No appointments found for selected date.");
+    }
+    
 
     appointments.sort(
       (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date)
@@ -158,8 +152,7 @@ async function viewSavedAppointments(req, res) {
       appointments,
       appointmentsJson: JSON.stringify(appointments),
       user: req.user,
-      selectedMonth: month || "",
-      selectedDate: date || "",
+      selectedDate: date || "", // only need selectedDate now
     });
   } catch (err) {
     console.error("Failed to load appointments:", err);

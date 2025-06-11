@@ -1,48 +1,52 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // --------- Handle form submission and price/notes updates ---------
+  // --------- Handle form submission for database save ---------
   const form = document.getElementById("postScheduleForm");
   const appointmentsInput = document.getElementById("appointmentsInput");
-  let appointments = [];
 
   if (form && appointmentsInput) {
-    const raw = form.dataset.appointments;
+    form.addEventListener("submit", () => {
+      const appointments = [];
 
-    if (raw && raw.trim()) {
-      try {
-        appointments = JSON.parse(raw);
-      } catch (err) {
-        console.error("Failed to parse appointments JSON:", err.message);
-        appointments = [];
-      }
-    }
+      // Collect scheduled appointments
+      const calendarCells = document.querySelectorAll("td[data-date]");
+      calendarCells.forEach((cell) => {
+        const date = cell.getAttribute("data-date");
+        const cards = cell.querySelectorAll("[data-client]");
 
-    form.addEventListener("submit", (e) => {
-      const prices = document.querySelectorAll(".price-input");
-      const notes = document.querySelectorAll(".notes-input");
+        cards.forEach((card) => {
+          const client = JSON.parse(card.getAttribute("data-client"));
+          client.appointment_date = date;
 
-      prices.forEach((input) => {
-        const index = parseInt(input.dataset.index);
-        if (!isNaN(index)) {
-          appointments[index].price = parseFloat(input.value) || 0;
-        }
+          // If price/notes exist in DOM (optional future feature)
+          const priceInput = card.querySelector(".price-input");
+          const notesInput = card.querySelector(".notes-input");
+
+          if (priceInput) client.price = parseFloat(priceInput.value) || 0;
+          if (notesInput) client.notes = notesInput.value || "";
+
+          appointments.push(client);
+        });
       });
 
-      notes.forEach((input) => {
-        const index = parseInt(input.dataset.index);
-        if (!isNaN(index)) {
-          appointments[index].notes = input.value;
-        }
+      // Add unassigned clients
+      const unassignedCards = document.querySelectorAll(
+        "#unassigned-list [data-client]"
+      );
+      unassignedCards.forEach((card) => {
+        const client = JSON.parse(card.getAttribute("data-client"));
+        client.appointment_date = null;
+        appointments.push(client);
       });
+
+      // Update hidden input
       appointmentsInput.value = JSON.stringify(appointments);
     });
   }
 
-  // --------- Shared DOM elements ---------
+  // --------- Handle client name search filter ---------
   const searchInput = document.getElementById("searchInput");
-  const dateInput = document.getElementById("dateInput");
   const rows = document.querySelectorAll("tbody tr");
 
-  // --------- Handle client name search filter ---------
   if (searchInput && rows.length > 0) {
     searchInput.addEventListener("keyup", () => {
       const filter = searchInput.value.toLowerCase();
@@ -57,7 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --------- Handle search by date ---------
+  // --------- Handle date search filter ---------
+  const dateInput = document.getElementById("dateInput");
+
   if (dateInput && rows.length > 0) {
     dateInput.addEventListener("change", () => {
       const selectedDate = dateInput.value;

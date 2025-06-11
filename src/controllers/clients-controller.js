@@ -299,7 +299,6 @@ async function showMissingPayments(req, res) {
       title: "Missing Payments Report",
       missingPayments,
       user: req.user, 
-      messages: req.flash(),
     });
   } catch (err) {
     console.error("Error loading missing payments:", err);
@@ -344,7 +343,6 @@ async function showAllPayments(req, res) {
       title: "All Payments",
       user: req.user,
       payments: allPayments,
-      messages: req.flash(),
     });
   } catch (err) {
     console.error("Failed to load all payments:", err);
