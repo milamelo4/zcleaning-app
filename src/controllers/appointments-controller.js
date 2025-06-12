@@ -148,6 +148,7 @@ async function viewSavedAppointments(req, res) {
       (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date)
     );
     const whatsappMessage = generateWhatsappSchedule(appointments);
+   
 
     res.render("pages/appointments/review", {
       title: "Manage Appointments",
