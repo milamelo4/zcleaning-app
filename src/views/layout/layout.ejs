@@ -39,14 +39,48 @@
         </div>
         <div class="offcanvas-body">
           <ul class="nav flex-column">
-            <li class="nav-item"><a href="/dashboard" class="nav-link"><i class="bi bi-house me-2"></i> Dashboard</a></li>
-            <li class="nav-item"><a href="/clients/" class="nav-link"><i class="bi bi-people me-2"></i> Clients</a></li>
-            <li class="nav-item"><a href="/appointments/monthly-preview" class="nav-link"><i class="bi bi-calendar2 me-2"></i> Calendar</a></li>
-            <li class="nav-item"><a href="/clients/missing-payments" class="nav-link"><i class="bi bi-cash-stack me-2"></i> Missing Payments</a></li>
-            <li class="nav-item"><a href="/admin/promote" class="nav-link"><i class="bi bi-person-gear me-2"></i> Approve Users</a></li>
-            <li class="nav-item mt-4"><a href="/logout" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+        
+            <!-- MAIN -->
+            <li class="nav-item small text-uppercase text-muted px-2 mt-2">Main</li>
+            <li class="nav-item"><a href="/dashboard" class="nav-link"><i
+                  class="bi bi-house me-2"></i> Dashboard</a></li>
+        
+            <!-- CLIENTS -->
+            <li class="nav-item small text-uppercase text-muted px-2 mt-3">Clients</li>
+            <li class="nav-item"><a href="/clients" class="nav-link"><i
+                  class="bi bi-people me-2"></i> View Clients</a></li>
+            <li class="nav-item"><a href="/clients/missing-payments" class="nav-link"><i
+                  class="bi bi-exclamation-circle me-2"></i> Missing Payments</a></li>
+        
+            <!-- APPOINTMENTS -->
+            <li class="nav-item small text-uppercase text-muted px-2 mt-3">Appointments
+            </li>
+            <li class="nav-item"><a href="/appointments/monthly-preview"
+                class="nav-link"><i class="bi bi-calendar-week me-2"></i> Calendar
+                Preview</a></li>
+            <li class="nav-item"><a href="/appointments/review" class="nav-link"><i
+                  class="bi bi-journal-check me-2"></i> Review Schedule</a></li>
+        
+            <!-- PAYMENTS -->
+            <li class="nav-item small text-uppercase text-muted px-2 mt-3">Payments</li>
+            <li class="nav-item"><a href="/clients/all-payments" class="nav-link"><i
+                  class="bi bi-currency-dollar me-2"></i> All Payments</a></li>
+        
+            <!-- ADMIN -->
+            <li class="nav-item small text-uppercase text-muted px-2 mt-3">Admin</li>
+            <li class="nav-item"><a href="/admin/promote" class="nav-link"><i
+                  class="bi bi-person-check me-2"></i> Approve Users</a></li>
+        
+            <!-- ACCOUNT -->
+            <li class="nav-item small text-uppercase text-muted px-2 mt-3">Account</li>
+            <li class="nav-item"><a href="/profile" class="nav-link"><i
+                  class="bi bi-person-circle me-2"></i> My Profile</a></li>
+            <li class="nav-item mt-3"><a href="/logout" class="nav-link text-danger"><i
+                  class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+        
           </ul>
         </div>
+        
       </div>
 
     </main>

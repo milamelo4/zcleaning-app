@@ -23,15 +23,35 @@
             </li>
 
             <li class="nav-item">
-                <a href="/appointments/monthly-preview" class="nav-link text-white hover-underline">
-                    <i class="bi bi-calendar2 me-2"></i> Calendar
+                <a class="nav-link text-white hover-underline" data-bs-toggle="collapse"
+                    href="#appointmentsMenu" role="button">
+                    <i class="bi bi-calendar2 me-2"></i> Appointments <i class="bi bi-chevron-down"></i>
                 </a>
+                <div class="collapse ps-3" id="appointmentsMenu">
+                    <a href="/appointments/monthly-preview" class="nav-link text-white hover-underline">
+                         Calendar
+                    </a>
+                    <a href="/appointments/review"
+                        class="nav-link text-white hover-underline">
+                        View Appointments
+                    </a>
+                </div>
             </li>
 
             <li class="nav-item">
-                <a href="/clients/missing-payments" class="nav-link text-white hover-underline">
-                    <i class="bi bi-cash-stack me-2"></i> Missing Payments
+                <a class="nav-link text-white hover-underline" data-bs-toggle="collapse"
+                    href="#paymentsMenu" role="button">
+                    <i class="bi bi-calendar2 me-2"></i> Payments <i
+                        class="bi bi-chevron-down"></i>
                 </a>
+                <div class="collapse ps-3" id="paymentsMenu">
+                    <a href="/clients/missing-payments" class="nav-link text-white hover-underline">
+                        Missing Payments
+                    </a>
+                    <a href="/clients/all-payments" class="nav-link text-white hover-underline">
+                        All Payments
+                    </a>
+                </div>
             </li>
 
             <li class="nav-item">
