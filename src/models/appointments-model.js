@@ -152,13 +152,33 @@ async function getAppointmentsByRange(startDate, endDate) {
 // Update appointment details
 //====================================
 async function updateAppointmentDetails(id, price, notes) {
-  const query = `
+  // Update appointment
+  const updateApptQuery = `
     UPDATE appointments
     SET price = $1,
         notes = $2
     WHERE appointment_id = $3
   `;
-  await pool.query(query, [price, notes, id]);
+  await pool.query(updateApptQuery, [price, notes, id]);
+
+  // Update matching payment (based on client + date)
+  const fetchApptQuery = `
+    SELECT client_id, appointment_date
+    FROM appointments
+    WHERE appointment_id = $1
+  `;
+  const result = await pool.query(fetchApptQuery, [id]);
+
+  if (result.rowCount > 0) {
+    const { client_id, appointment_date } = result.rows[0];
+
+    const updatePaymentQuery = `
+      UPDATE client_payment
+      SET price = $1
+      WHERE client_id = $2 AND due_date = $3
+    `;
+    await pool.query(updatePaymentQuery, [price, client_id, appointment_date]);
+  }
 }
 
 module.exports = { 

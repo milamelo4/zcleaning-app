@@ -5,7 +5,10 @@
       <h1><%= title %></h1> 
   
       <% if (missingPayments && missingPayments.length > 0) { %>
-  
+        <div class="d-flex justify-content-end no-print">
+          <button class="btn btn-primary mb-3"
+            onclick="window.print()">Print</button>
+        </div>
         <div class="table-responsive">
           <table class="table table-bordered table-striped align-middle">
             <thead class="table-danger">
@@ -35,9 +38,7 @@
       <% } else { %>
         <p>No missing payments found.</p>
       <% } %>
-      <div class="no-print d-flex flex-column align-items-center">
-        <button class="btn btn-outline-secondary mb-3"
-          onclick="window.print()">Print</button>
+      <div class="no-print d-flex flex-column align-items-center">        
         <a href="/dashboard" class="btn btn-outline-secondary mt-4">← Back to Dashboard</a>
       </div>
       

@@ -58,7 +58,6 @@ async function previewMonthlySchedule(req, res) {
   }
 }
 
-
 async function saveFinalizedSchedule(req, res) {
   try {
     const raw = req.body.appointments;
@@ -110,9 +109,8 @@ async function saveFinalizedSchedule(req, res) {
         notes,
       });
       await insertPaymentIfNeeded(client_id, appt.appointment_date);
+      
     }
-
-    
 
     req.flash("success_msg", "Schedule saved successfully.");
     res.redirect("/appointments/review");
@@ -147,8 +145,7 @@ async function viewSavedAppointments(req, res) {
     appointments.sort(
       (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date)
     );
-    const whatsappMessage = generateWhatsappSchedule(appointments);
-   
+    const whatsappMessage = generateWhatsappSchedule(appointments);   
 
     res.render("pages/appointments/review", {
       title: "Manage Appointments",
@@ -156,7 +153,7 @@ async function viewSavedAppointments(req, res) {
       appointmentsJson: JSON.stringify(appointments),
       whatsappMessage,
       user: req.user,
-      selectedDate: date || "", // only need selectedDate now
+      selectedDate: date || "", 
     });
   } catch (err) {
     console.error("Failed to load appointments:", err);

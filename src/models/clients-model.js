@@ -221,7 +221,7 @@ async function getAllPaymentTypes(clientId) {
       (cp.received_date IS NULL AND cp.expected_received_date < CURRENT_DATE) AS is_overdue,
       c.first_name, 
       c.last_name, 
-      c.price 
+      cp.price 
     FROM client_payment cp
     JOIN clients c ON cp.client_id = c.client_id
     WHERE cp.client_id = $1
@@ -241,24 +241,24 @@ async function getAllPaymentTypes(clientId) {
 async function getAllMissingPayments() {
   try {
     const sql = `
-      SELECT 
-      cp.payment_id,
-      cp.payment_type,
-      cp.payment_schedule,
-      cp.due_date,
-      cp.received_date,
-      cp.expected_received_date,
-      (cp.received_date IS NULL AND cp.expected_received_date < CURRENT_DATE) AS is_overdue,
-      c.client_id,
-      c.first_name,
-      c.last_name,
-      c.price
-    FROM client_payment cp
-    JOIN clients c ON cp.client_id = c.client_id
-    WHERE cp.received_date IS NULL
-      AND cp.expected_received_date < CURRENT_DATE
-    ORDER BY cp.expected_received_date DESC;
-  `;
+  SELECT 
+    cp.payment_id,
+    cp.payment_type,
+    cp.payment_schedule,
+    cp.due_date,
+    cp.received_date,
+    cp.expected_received_date,
+    cp.price,
+    (cp.received_date IS NULL AND cp.expected_received_date < CURRENT_DATE) AS is_overdue,
+    c.client_id,
+    c.first_name,
+    c.last_name
+  FROM client_payment cp
+  JOIN clients c ON cp.client_id = c.client_id
+  WHERE cp.received_date IS NULL
+    AND cp.expected_received_date < CURRENT_DATE
+  ORDER BY cp.expected_received_date DESC;
+`;
 
     const result = await pool.query(sql);
     return result.rows;
@@ -301,13 +301,25 @@ async function unmarkPaymentAsReceived(paymentId, clientId) {
 }
 
 //====================================
-// Insert payment if it doesn't exist for the given client and appointment date
+// Insert payment if it doesn't exist 
 //====================================
 async function insertPaymentIfNeeded(client_id, appointment_date) {
-  // Convert appointment_date to plain YYYY-MM-DD string
   const due_date = new Date(appointment_date).toISOString().slice(0, 10);
 
-  // Check if payment for this client and date already exists
+  // Check if the appointment exists
+  const apptResult = await pool.query(
+    `SELECT price FROM appointments WHERE client_id = $1 AND appointment_date = $2 LIMIT 1`,
+    [client_id, due_date]
+  );
+
+  if (apptResult.rowCount === 0) {
+    console.log(
+      `Skipped: No appointment for client ${client_id} on ${due_date}`
+    );
+    return;
+  }
+
+  // Check if payment already exists
   const sqlCheck = `
     SELECT 1 FROM client_payment
     WHERE client_id = $1 AND due_date = $2
@@ -317,62 +329,63 @@ async function insertPaymentIfNeeded(client_id, appointment_date) {
 
   if (existing.rowCount > 0) {
     console.log(
-      `Skipped: payment already exists for client ${client_id} on ${due_date}`
+      `Skipped: Payment already exists for client ${client_id} on ${due_date}`
     );
     return;
   }
 
-  // Calculate expected received date (7 days after due date)
+  // Extract appointment price
+  const apptPrice = apptResult.rows[0].price || 0.0;
+
+  // Calculate expected received date (7 days later)
   const expectedDateObj = new Date(appointment_date);
   expectedDateObj.setDate(expectedDateObj.getDate() + 7);
   const expected_received_date = expectedDateObj.toISOString().slice(0, 10);
 
-  // Insert new payment
+  // Insert payment with price
   const sqlInsert = `
     INSERT INTO client_payment (
       client_id,
       payment_type,
       payment_schedule,
       due_date,
-      expected_received_date
-    ) VALUES ($1, $2, $3, $4, $5)
+      expected_received_date,
+      price
+    ) VALUES ($1, $2, $3, $4, $5, $6)
   `;
   await pool.query(sqlInsert, [
     client_id,
-    "cash", // default value
-    "monthly", // hardcoded for now
+    "cash",
+    "monthly",
     due_date,
     expected_received_date,
+    apptPrice,
   ]);
 }
-
 
 //====================================
 // Show all payments
 //====================================
 async function getAllPayments() {
   const sql = `
-    SELECT 
-      cp.payment_id,
-      cp.payment_type,
-      cp.payment_schedule,
-      cp.due_date,
-      cp.received_date,
-      cp.expected_received_date,
-      a.price,
-      c.first_name,
-      c.last_name,
-      c.client_id
-    FROM client_payment cp
-    JOIN clients c ON cp.client_id = c.client_id
-    JOIN appointments a ON cp.client_id = a.client_id AND cp.due_date = a.appointment_date
-    ORDER BY cp.due_date ASC
-  `;
-
+  SELECT 
+    cp.payment_id,
+    cp.payment_type, 
+    cp.payment_schedule, 
+    cp.due_date, 
+    cp.received_date,
+    cp.expected_received_date,
+    cp.price,
+    (cp.received_date IS NULL AND cp.expected_received_date < CURRENT_DATE) AS is_overdue,
+    c.first_name, 
+    c.last_name
+  FROM client_payment cp
+  JOIN clients c ON cp.client_id = c.client_id
+  ORDER BY cp.due_date DESC
+`;
   const result = await pool.query(sql);
   return result.rows;
 }
-
 
 
 module.exports = {
