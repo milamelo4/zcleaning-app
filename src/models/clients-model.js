@@ -313,9 +313,9 @@ async function insertPaymentIfNeeded(client_id, appointment_date) {
   );
 
   if (apptResult.rowCount === 0) {
-    console.log(
-      `Skipped: No appointment for client ${client_id} on ${due_date}`
-    );
+    // console.log(
+    //   `Skipped: No appointment for client ${client_id} on ${due_date}`
+    // );
     return;
   }
 
@@ -328,9 +328,9 @@ async function insertPaymentIfNeeded(client_id, appointment_date) {
   const existing = await pool.query(sqlCheck, [client_id, due_date]);
 
   if (existing.rowCount > 0) {
-    console.log(
-      `Skipped: Payment already exists for client ${client_id} on ${due_date}`
-    );
+    // console.log(
+    //   `Skipped: Payment already exists for client ${client_id} on ${due_date}`
+    // );
     return;
   }
 

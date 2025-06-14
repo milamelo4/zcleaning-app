@@ -113,10 +113,37 @@ async function getSchedulableClients() {
 //====================================
 // Delete an appointment
 //====================================
-async function deleteAppointmentById(id) {
-  const query = "DELETE FROM appointments WHERE appointment_id = $1";
-  await pool.query(query, [id]);
+async function deleteAppointmentById(appointmentId) {
+  try {
+    const result = await pool.query(
+      "SELECT client_id, appointment_date FROM appointments WHERE appointment_id = $1",
+      [appointmentId]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error("Appointment not found");
+    }
+
+    const { client_id, appointment_date } = result.rows[0];
+
+    // Delete the appointment
+    await pool.query("DELETE FROM appointments WHERE appointment_id = $1", [
+      appointmentId,
+    ]);
+
+    // Delete the payment with the same client and date
+    await pool.query(
+      "DELETE FROM client_payment WHERE client_id = $1 AND due_date = $2",
+      [client_id, appointment_date]
+    );
+
+    return true;
+  } catch (err) {
+    console.error("Error deleting appointment and payment:", err);
+    throw err;
+  }
 }
+
 
 //====================================
 // Get appointments by date
