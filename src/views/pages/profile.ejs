@@ -17,7 +17,46 @@
       </div>
     </div>
   </div>
-
+    
+  <% if (employeeDetails) { %>
+    <div class="card mt-4 shadow border border-secondary" style="max-width: 600px; margin: 0 auto;">
+      <div class="card-header bg-secondary text-white text-center fw-bold">
+        Employment Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-6 mb-2">
+            <strong>Phone:</strong><br />
+            <%= employeeDetails.phone_number %>
+          </div>
+          <div class="col-6 mb-2">
+            <strong>Hire Date:</strong><br />
+            <%= new Date(employeeDetails.hire_date).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            }) %>
+          </div>
+          <div class="col-6 mb-2">
+            <strong>Status:</strong><br />
+            <%= employeeDetails.employment_status === 'full_time' ? 'Full-Time' : 'Part-Time' %>
+          </div>
+          <div class="col-6 mb-2">
+            <strong>Hourly Pay:</strong><br />
+            $<%= parseFloat(employeeDetails.hourly_pay_rate).toFixed(2) %>
+          </div>
+          <div class="col-12 text-center mt-3">
+            <% if (employeeDetails.is_active) { %>
+              <span class="badge bg-success">Active</span>
+            <% } else { %>
+              <span class="badge bg-secondary">Inactive</span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } %>
+  
   <div class="mt-5 text-center">
     <% if (user.account_type === "employee" || user.account_type === "admin") { %>
       <div class="card mt-4 shadow border border-info" style="max-width: 600px; margin: 0 auto;">
@@ -55,7 +94,7 @@
         </div>
       </div>
     <% } else { %>
-      <p class="text-muted">More features coming soon — like your upcoming schedule or assigned clients!</p>
+      <!-- <p class="text-muted">More features coming soon — like your upcoming schedule or assigned clients!</p> -->
     <% } %>
   </div>
 </div>

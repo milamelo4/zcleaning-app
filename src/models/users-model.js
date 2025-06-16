@@ -81,6 +81,22 @@ async function updateProfileImage(email, imageUrl) {
   await pool.query(sql, [imageUrl, email]);
 }
 
+//====================================
+// Get user by ID
+//====================================
+async function getUserById(account_id) {
+  try {
+    const sql = `
+      SELECT account_id, account_firstname, account_lastname, account_email
+      FROM users
+      WHERE account_id = $1
+    `;
+    const result = await pool.query(sql, [account_id]);
+    return result.rows[0];
+  } catch (err) {
+    throw new Error("Failed to find user by ID: " + err.message);
+  }
+}
 
 module.exports = {
     createUser,
@@ -88,4 +104,5 @@ module.exports = {
     getAllUsers,
     updateRole,
     updateProfileImage,
+    getUserById,
 };

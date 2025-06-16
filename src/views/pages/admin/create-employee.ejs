@@ -1,0 +1,62 @@
+
+<div class="d-flex min-vh-100">
+    <%- include("../../partials/sidebar") %>
+    <div class="container mt-5" style="max-width: 700px;">
+    
+      <h2 class="mb-4 text-center text-primary">Create Employee Profile</h2>
+    
+      <% if (messages.error_msg) { %>
+        <div class="alert alert-danger"><%= messages.error_msg %></div>
+      <% } %>
+      <% if (messages.success_msg) { %>
+        <div class="alert alert-success"><%= messages.success_msg %></div>
+      <% } %>
+    
+      <form action="/admin/create-employee/<%= user.account_id %>" method="POST" class="border p-4 shadow-sm bg-light rounded">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" name="first_name" class="form-control" value="<%= user.account_firstname %>" required>
+          </div>
+    
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" name="last_name" class="form-control" value="<%= user.account_lastname %>" required>
+          </div>
+    
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" value="<%= user.account_email %>" required>
+          </div>
+    
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone Number</label>
+            <input type="text" name="phone_number" class="form-control" required placeholder="e.g. 8015551234">
+          </div>
+    
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Hire Date</label>
+            <input type="date" name="hire_date" class="form-control" required>
+          </div>
+    
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Hourly Pay Rate ($)</label>
+            <input type="number" name="hourly_pay_rate" class="form-control" step="0.01" required>
+          </div>
+    
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Employment Status</label>
+            <select name="employment_status" class="form-select" required>
+              <option value="">Select...</option>
+              <option value="full_time">Full-Time</option>
+              <option value="part_time">Part-Time</option>
+            </select>
+          </div>
+        </div>
+    
+        <div class="text-end">
+          <button type="submit" class="btn btn-success mt-3">Create Employee</button>
+        </div>
+      </form>
+    </div>
+</div>

@@ -1,6 +1,6 @@
-<div class="d-flex min-vh-100">
-  <%- include("../../partials/sidebar") %>
-  
+
+<div class="d-flex min-vh-100">  
+  <%- include("../../partials/sidebar") %>  
   <div class="flex-grow-1 px-3 py-4" style="min-width: 0;">
     <h2>Manage User Roles</h2>
     <p class="text-muted">Only Admins can view this page.</p>
@@ -44,9 +44,19 @@
                     </select>
                   </td>
                   <td>
-                    <button type="submit"
-                      class="btn btn-primary btn-sm">Update</button>
+                    <div class="d-grid gap-2">
+                      <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                  
+                      <% if (user.account_type==="employee" ) { %>
+                        <a href="/admin/create-employee/<%= user.account_id %>"
+                          class="btn btn-outline-secondary btn-sm">
+                          Create Profile
+                        </a>
+                        <% } %>
+                    </div>
                   </td>
+                  
+                  
                 </tr>
               </form>
               <% }) %>

@@ -6,7 +6,7 @@ const {
 } = require("../models/dashboard-model");
 
 const { getAppointmentsForEmployee } = require("../models/appointments-model");
-const { generateWhatsappSchedule }= require("../utils/formatWhatsappMessage");
+const { getEmployeeProfileByEmail, getEmployeeProfileByAccountId } = require("../models/employee-model");
 
 async function dashboard(req, res) {
   try {
@@ -45,27 +45,31 @@ async function profile(req, res) {
 
   try {
     let groupedAppointments = {};
+    let employeeDetails = null;
 
     if (type === "employee" || type === "admin") {
       const appointments = await getAppointmentsForEmployee();
-
       appointments.forEach((appt) => {
         const date = new Date(appt.appointment_date);
         const key = date.toLocaleDateString("en-US", {
           weekday: "long",
           day: "numeric",
         });
-
         if (!groupedAppointments[key]) groupedAppointments[key] = [];
         groupedAppointments[key].push(appt);
       });
+
+      // Load employee details
+      employeeDetails = await getEmployeeProfileByAccountId(
+        req.user.account_id
+      );
     }
 
     res.render("pages/profile", {
       title: "Your Profile",
       user: req.user,
       groupedAppointments,
-      messages: req.flash(),
+      employeeDetails,
     });
   } catch (err) {
     console.error("Error loading profile page:", err);
