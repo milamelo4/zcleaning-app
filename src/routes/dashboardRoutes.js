@@ -6,21 +6,8 @@ const checkAdmin = require("../middleware/checkAdmin");
 
 router.get('/dashboard', isLoggedIn, checkAdmin, dashboardController.dashboard);
 
-router.get("/profile", isLoggedIn, (req, res) => {
-  const type = req.user.account_type.toLowerCase();
-  const allowed = ["admin", "supervisor", "employee"];
+router.get("/profile", isLoggedIn, dashboardController.profile);
 
-  if (!allowed.includes(type)) {
-    req.flash("error_msg", "You are not authorized.");
-    return res.redirect("/");
-  }
-
-  // Proceed to render profile
-  res.render("pages/profile", {
-    title: "Your Profile",
-    user: req.user,
-  });
-});
 
 router.get("/about", (req, res) => {
   res.render("pages/about", { 

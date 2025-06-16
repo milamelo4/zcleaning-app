@@ -31,7 +31,6 @@ async function getUpcomingAppointments() {
   }
 }
 
-
 //====================================
 // Create a new appointment
 //====================================
@@ -75,7 +74,6 @@ async function createAppointment(appointment) {
     notes,
   ]);
 }
-
 
 //====================================
 // Get all schedulable clients
@@ -144,7 +142,6 @@ async function deleteAppointmentById(appointmentId) {
   }
 }
 
-
 //====================================
 // Get appointments by date
 //====================================
@@ -208,6 +205,27 @@ async function updateAppointmentDetails(id, price, notes) {
   }
 }
 
+//====================================
+// Get appointments for employee in the next 14 days
+//====================================
+async function getAppointmentsForEmployee() {
+  const sql = `
+    SELECT 
+      a.appointment_date,
+      a.duration_hours,
+      c.first_name,
+      c.last_name
+    FROM appointments a
+    JOIN clients c ON a.client_id = c.client_id
+    WHERE a.appointment_date >= CURRENT_DATE
+      AND a.appointment_date < CURRENT_DATE + INTERVAL '14 days'
+    ORDER BY a.appointment_date ASC;
+  `;
+
+  const result = await pool.query(sql);
+  return result.rows;
+}
+
 module.exports = { 
   getUpcomingAppointments, 
   createAppointment, 
@@ -215,5 +233,6 @@ module.exports = {
   deleteAppointmentById,
   getAppointmentsByDate,
   getAppointmentsByRange,
-  updateAppointmentDetails 
+  updateAppointmentDetails,
+  getAppointmentsForEmployee 
 }
