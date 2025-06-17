@@ -61,7 +61,6 @@ async function previewMonthlySchedule(req, res) {
 async function saveFinalizedSchedule(req, res) {
   try {
     const raw = req.body.appointments;
-    //console.log("Raw input:", raw);
 
     let appointments = [];
     try {
@@ -82,35 +81,103 @@ async function saveFinalizedSchedule(req, res) {
       return res.redirect("/appointments/monthly-preview");
     }
 
+    // Step 1: Get the full date range from the draft
+    const allDates = appointments.map(
+      (appt) => new Date(appt.appointment_date)
+    );
+    const minDate = new Date(Math.min(...allDates));
+    const maxDate = new Date(Math.max(...allDates));
+    const startDate = minDate.toISOString().split("T")[0];
+    const endDate = maxDate.toISOString().split("T")[0];
+
+    // Step 2: Get existing appointments in that date range
+    const existingAppointments = await getAppointmentsByRange(
+      startDate,
+      endDate
+    );
+
+    // Step 3: Create a map for quick lookup
+    const existingMap = {};
+    for (const appt of existingAppointments) {
+      const formattedDate = new Date(appt.appointment_date)
+        .toISOString()
+        .split("T")[0];
+      const key = `${appt.client_id}|${formattedDate}`;
+      existingMap[key] = appt;
+    }    
+
+    // Step 4: Handle inserts and updates
     for (const appt of appointments) {
       const client_id = parseInt(appt.client_id);
       const service_type_id = parseInt(appt.service_type_id);
       const duration_hours = parseFloat(appt.duration_hours);
       const price = appt.price !== undefined ? parseFloat(appt.price) : 0;
       const notes = appt.notes || null;
+      const appointment_date = appt.appointment_date;
 
       if (
         isNaN(client_id) ||
         isNaN(service_type_id) ||
         isNaN(duration_hours) ||
         isNaN(price) ||
-        !appt.appointment_date 
+        !appointment_date
       ) {
-        //console.error("Skipping invalid appointment:", appt);
-        continue;
+        continue; // Skip invalid data
       }
 
-      await createAppointment({
-        client_id,
-        appointment_date: appt.appointment_date,
-        service_type_id,
-        duration_hours,
-        price,
-        notes,
-      });
-      await insertPaymentIfNeeded(client_id, appt.appointment_date);
-      
+      const key = `${client_id}|${new Date(appointment_date).toISOString().split("T")[0]
+      }`;
+
+      const existing = existingMap[key];
+
+      if (existing) {
+        // Update if values changed
+        const hasChanges =
+          existing.service_type_id !== service_type_id ||
+          parseFloat(existing.duration_hours) !== duration_hours ||
+          parseFloat(existing.price) !== price ||
+          (existing.notes || "") !== notes;
+
+        if (hasChanges) {
+          await updateAppointmentDetails(existing.appointment_id, price, notes);
+        }
+
+        // Remove handled item from map
+        delete existingMap[key];
+      } else {
+        // New appointment
+        await createAppointment({
+          client_id,
+          appointment_date,
+          service_type_id,
+          duration_hours,
+          price,
+          notes,
+        });
+      }
+
+      // Always attempt to create payment
+      await insertPaymentIfNeeded(client_id, appointment_date);
     }
+
+    // Step 5: Delete appointments that are no longer in the draft
+    for (const leftoverKey in existingMap) {
+      const appt = existingMap[leftoverKey];
+      //console.log("Deleting leftover appointment:", leftoverKey, appt);
+
+      if (appt && appt.appointment_id) {
+        try {
+          await deleteAppointmentById(appt.appointment_id);
+        } catch (err) {
+          console.error(
+            "Failed to delete appointment:",
+            appt.appointment_id,
+            err.message
+          );
+        }
+      }
+    }
+    
 
     req.flash("success_msg", "Schedule saved successfully.");
     res.redirect("/appointments/review");
@@ -120,6 +187,7 @@ async function saveFinalizedSchedule(req, res) {
     res.redirect("/appointments/monthly-preview");
   }
 }
+
 
 async function viewSavedAppointments(req, res) {
   try {

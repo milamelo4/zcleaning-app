@@ -1,4 +1,7 @@
 const express= require('express');
+const isLoggedIn = require("../middleware/authMiddleware");
+const checkAdmin = require("../middleware/checkAdmin");
+
 const router= express.Router();
 const {
   showUserRolesPage,
@@ -7,14 +10,13 @@ const {
   createEmployeeProfile,
 } = require("../controllers/admin-controller");
 
-const checkAdmin = require('../middleware/checkAdmin');
 
-router.get('/promote', checkAdmin, showUserRolesPage);
+router.get('/promote', isLoggedIn, checkAdmin, showUserRolesPage);
 
-router.post("/promote", checkAdmin, updateUserRole);
+router.post("/promote", isLoggedIn, checkAdmin, updateUserRole);
 
-router.get("/create-employee/:accountId", checkAdmin, showCreateEmployeeForm);
+router.get("/create-employee/:accountId", isLoggedIn, checkAdmin, showCreateEmployeeForm);
 
-router.post("/create-employee/:accountId", checkAdmin, createEmployeeProfile);
+router.post("/create-employee/:accountId", isLoggedIn, checkAdmin, createEmployeeProfile);
 
 module.exports = router;

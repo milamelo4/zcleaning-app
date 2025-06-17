@@ -1,18 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const dashboardController = require('../controllers/dashboardController');
+const { dashboard, profile} = require('../controllers/dashboardController');
 const isLoggedIn = require('../middleware/authMiddleware');
 const checkAdmin = require("../middleware/checkAdmin");
 
-router.get('/dashboard', isLoggedIn, checkAdmin, dashboardController.dashboard);
+router.get('/dashboard', isLoggedIn, checkAdmin, dashboard);
 
-router.get("/profile", isLoggedIn, dashboardController.profile);
-
+router.get("/profile", isLoggedIn, profile);
 
 router.get("/about", (req, res) => {
   res.render("pages/about", { 
     title: "About ZCleaning",
-    messages: req.flash(),
     user: req.user,
   });
 });

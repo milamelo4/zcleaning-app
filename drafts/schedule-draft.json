@@ -1,19 +1,6 @@
 {
   "scheduledClients": [
     {
-      "client_id": 11,
-      "first_name": "Hediyeh",
-      "last_name": "Commbs",
-      "appointment_date": "2025-06-02",
-      "weekday": "Monday",
-      "service_type_id": 1,
-      "duration_hours": "4.00",
-      "service_frequency": "once_a_week",
-      "last_appointment_date": "2025-05-19T06:00:00.000Z",
-      "price": "4.00",
-      "true_last_cleaned_date": "2025-05-19T06:00:00.000Z"
-    },
-    {
       "client_id": 18,
       "first_name": "Lohren",
       "last_name": "Layton",
@@ -207,45 +194,6 @@
       "last_appointment_date": "2025-05-05T06:00:00.000Z",
       "price": "5.00",
       "true_last_cleaned_date": "2025-05-05T06:00:00.000Z"
-    },
-    {
-      "client_id": 63,
-      "first_name": "Deena",
-      "last_name": "Mc-Clain",
-      "appointment_date": "2025-06-05",
-      "weekday": "Thursday",
-      "service_type_id": 2,
-      "duration_hours": "6.00",
-      "service_frequency": "every_other_week",
-      "last_appointment_date": null,
-      "price": "200.00",
-      "true_last_cleaned_date": null
-    },
-    {
-      "client_id": 9,
-      "first_name": "Dianne",
-      "last_name": "Rivera",
-      "appointment_date": "2025-06-05",
-      "weekday": "Thursday",
-      "service_type_id": 2,
-      "duration_hours": "7.00",
-      "service_frequency": "every_other_week",
-      "last_appointment_date": "2025-05-08T06:00:00.000Z",
-      "price": "200.00",
-      "true_last_cleaned_date": "2025-05-08T06:00:00.000Z"
-    },
-    {
-      "client_id": 23,
-      "first_name": "Norb",
-      "last_name": "Kemp",
-      "appointment_date": "2025-06-05",
-      "weekday": "Monday",
-      "service_type_id": 3,
-      "duration_hours": "5.00",
-      "service_frequency": "once_a_month",
-      "last_appointment_date": "2025-05-02T06:00:00.000Z",
-      "price": "150.00",
-      "true_last_cleaned_date": "2025-05-02T06:00:00.000Z"
     },
     {
       "client_id": 32,
@@ -1168,6 +1116,58 @@
       "last_appointment_date": "2024-05-22T06:00:00.000Z",
       "price": "1.00",
       "true_last_cleaned_date": "2025-06-13"
+    },
+    {
+      "client_id": 63,
+      "first_name": "Deena",
+      "last_name": "Mc-Clain",
+      "appointment_date": null,
+      "weekday": "Thursday",
+      "service_type_id": 2,
+      "duration_hours": "6.00",
+      "service_frequency": "every_other_week",
+      "last_appointment_date": null,
+      "price": "200.00",
+      "true_last_cleaned_date": null
+    },
+    {
+      "client_id": 9,
+      "first_name": "Dianne",
+      "last_name": "Rivera",
+      "appointment_date": null,
+      "weekday": "Thursday",
+      "service_type_id": 2,
+      "duration_hours": "7.00",
+      "service_frequency": "every_other_week",
+      "last_appointment_date": "2025-05-08T06:00:00.000Z",
+      "price": "200.00",
+      "true_last_cleaned_date": "2025-05-08T06:00:00.000Z"
+    },
+    {
+      "client_id": 23,
+      "first_name": "Norb",
+      "last_name": "Kemp",
+      "appointment_date": null,
+      "weekday": "Monday",
+      "service_type_id": 3,
+      "duration_hours": "5.00",
+      "service_frequency": "once_a_month",
+      "last_appointment_date": "2025-05-02T06:00:00.000Z",
+      "price": "150.00",
+      "true_last_cleaned_date": "2025-05-02T06:00:00.000Z"
+    },
+    {
+      "client_id": 11,
+      "first_name": "Hediyeh",
+      "last_name": "Commbs",
+      "appointment_date": null,
+      "weekday": "Monday",
+      "service_type_id": 1,
+      "duration_hours": "4.00",
+      "service_frequency": "once_a_week",
+      "last_appointment_date": "2025-05-19T06:00:00.000Z",
+      "price": "4.00",
+      "true_last_cleaned_date": "2025-05-19T06:00:00.000Z"
     }
   ]
 }

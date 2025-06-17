@@ -119,7 +119,11 @@ async function deleteAppointmentById(appointmentId) {
     );
 
     if (result.rows.length === 0) {
-      throw new Error("Appointment not found");
+      // Appointment already deleted or never existed — not an error during syncing
+      console.warn(
+        `Appointment ID ${appointmentId} not found — skipping delete.`
+      );
+      return false;
     }
 
     const { client_id, appointment_date } = result.rows[0];
@@ -141,6 +145,7 @@ async function deleteAppointmentById(appointmentId) {
     throw err;
   }
 }
+
 
 //====================================
 // Get appointments by date

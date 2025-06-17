@@ -1,5 +1,5 @@
 <div class="container mt-5">
-  <div class="card shadow border border-warning" style="max-width: 600px; margin: 0 auto;">
+  <div class="card shadow border border-info no-print" style="max-width: 600px; margin: 0 auto;">
     <div class="card-body d-flex flex-column flex-md-row align-items-center gap-4 bg-custom gold rounded-3">
       <!-- User Info -->
       <div>
@@ -19,7 +19,7 @@
   </div>
     
   <% if (employeeDetails) { %>
-    <div class="card mt-4 shadow border border-secondary" style="max-width: 600px; margin: 0 auto;">
+    <div class="card mt-4 shadow border border-secondary no-print" style="max-width: 600px; margin: 0 auto;">
       <div class="card-header bg-secondary text-white text-center fw-bold">
         Employment Information
       </div>
@@ -61,7 +61,8 @@
     <% if (user.account_type === "employee" || user.account_type === "admin") { %>
       <div class="card mt-4 shadow border border-info" style="max-width: 600px; margin: 0 auto;">
         <div class="card-header bg-info text-white text-center fw-bold">
-          Upcoming 2-Week Schedule
+          Upcoming 2-Week Schedule 
+          <div class="btn btn-primary no-print float-end" onclick="window.print()"><i class="bi bi-printer"></i> Print</div>
         </div>
         <div class="card-body">
           <% if (groupedAppointments && Object.keys(groupedAppointments).length > 0) { %>

@@ -46,7 +46,7 @@ Example: create_clients.sql defines the clients table with fields for names, con
 This project was developed with the help of generative AI tools as permitted under the CSE Generative AI Usage Policy.
 
 - **ChatGPT** – Provided step-by-step guidance, explanations, and debugging support throughout the project.
-- **OpenAI Codex** – Helped generate code snippets and summarize existing project files, particularly for scheduling logic and calendar functions.
+
 - **GitHub Copilot** – Assisted with code completion, variable naming, structure organization, and generating helpful inline comments.
 
 All AI-generated content was reviewed and modified to suit the specific needs of this application. The logic, design decisions, and final implementation reflect personal understanding and active involvement in all parts of the development process.

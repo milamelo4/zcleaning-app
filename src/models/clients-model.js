@@ -225,9 +225,9 @@ async function getAllPaymentTypes(clientId) {
     FROM client_payment cp
     JOIN clients c ON cp.client_id = c.client_id
     WHERE cp.client_id = $1
-    ORDER BY cp.due_date DESC
+    ORDER BY cp.due_date ASC
   `;
-
+  
     const result = await pool.query(sql, [clientId]);
     return result.rows;
   } catch (err) {
@@ -257,7 +257,7 @@ async function getAllMissingPayments() {
   JOIN clients c ON cp.client_id = c.client_id
   WHERE cp.received_date IS NULL
     AND cp.expected_received_date < CURRENT_DATE
-  ORDER BY cp.expected_received_date DESC;
+  ORDER BY cp.expected_received_date ASC;
 `;
 
     const result = await pool.query(sql);
@@ -381,7 +381,7 @@ async function getAllPayments() {
     c.last_name
   FROM client_payment cp
   JOIN clients c ON cp.client_id = c.client_id
-  ORDER BY cp.due_date DESC
+  ORDER BY cp.due_date ASC
 `;
   const result = await pool.query(sql);
   return result.rows;

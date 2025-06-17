@@ -37,7 +37,7 @@ function getClientsForWeek(clients, weekStartDate, virtualLastDates = {}) {
         start.getDate() + ((preferredDayIndex + 7 - start.getDay()) % 7)
       );
 
-      if (preferredDayIndex > 5) return; // skip weekends unless explicitly allowed
+      if (preferredDayIndex > 5) return; // skip weekends 
     } else {
       const weekdayIndex =
         availableWeekdays[notSetIndex % availableWeekdays.length];
@@ -103,7 +103,7 @@ function getClientsForMonth(clients, year, month) {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const scheduledClients = [];
-  const hoursPerDay = {}; // Track total hours per YYYY-MM-DD
+  const hoursPerDay = {}; // Track total hours 
 
   // Track each client's last appointment using DB history
   const virtualLastDates = {};

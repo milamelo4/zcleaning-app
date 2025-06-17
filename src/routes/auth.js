@@ -29,6 +29,7 @@ router.get("/auth/google/callback", (req, res, next) => {
       }
 
       if (role === "employee") {
+        req.flash("success_msg", "You are now logged in!");
         return res.redirect("/profile"); 
       }
 
