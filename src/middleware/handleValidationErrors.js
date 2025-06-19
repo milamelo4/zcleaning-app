@@ -25,7 +25,6 @@ async function handleValidationErrors(req, res, next) {
       }
     );
   }
-
   next();
 }
 

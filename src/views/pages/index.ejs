@@ -1,6 +1,5 @@
 
-<div class="card mb-3 mx-auto p-3 mt-2"
-    style="max-width: 440px;">
+<div class="card mb-3 mx-auto p-3 mt-2" style="max-width: 440px;">
     <div class="row g-0">
         <div class="col-mx-4">
             <img src="/images/bee.webp"
@@ -9,8 +8,7 @@
         </div>
         <div class="col-md-15">
             <div class="card-body text-bg-dark p-3">
-                <h5 class="card-title">Welcome to ZCleaning!
-                </h5>
+                <h5 class="card-title">Welcome to ZCleaning!</h5>
                 <% if (!user) { %>
                     <p>Please log in to manage your account.</p>
                     <% } %>
@@ -24,15 +22,15 @@
                         <% } else { %>
                             <div
                                 class="d-flex flex-column align-items-start">
-                                <p class="mb-2">You're logged in
-                                    as <strong>
+                                <p class="mb-2">You're logged in as 
+                                    <strong>
                                         <%= user?.account_firstname %>
                                             <%= user?.account_lastname %>
-                                    </strong></p>
-                                <a href="/logout"
-                                    class="btn btn-outline-danger d-flex align-items-center">Logout</a>
+                                    </strong>
+                                </p>
+                                <a href="/logout" class="btn btn-outline-danger d-flex align-items-center">Logout</a>
                             </div>
-                            <% } %>
+                    <% } %>
                 </p>
             </div>
         </div>

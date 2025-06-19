@@ -25,36 +25,35 @@
           </form>
         </div>      
       </div>
-        <div class="mb-4">
-          <h5>Unassigned Clients</h5>
-        <div id="unassigned-list" class="d-flex flex-wrap gap-3"
-            ondragover="event.preventDefault()" ondrop="handleUnassignDrop(event)">
+      <div class="mb-4">
+        <h5>Unassigned Clients</h5>
+      <div id="unassigned-list" class="d-flex flex-wrap gap-3"
+          ondragover="event.preventDefault()" ondrop="handleUnassignDrop(event)">
 
-            <% unassignedClients.forEach(function(client) { %>
-              <div id="unassigned-<%= client.client_id %>"
-                class="p-2 border rounded bg-light shadow-sm" style="min-width: 180px;"
-                draggable="true" ondragstart="handleDragStart(event)"
-                data-client='<%- JSON.stringify({ ...client, true_last_cleaned_date: client.true_last_cleaned_date }) %>'>
-                <strong>
-                  <%= client.first_name %>
-                    <%= client.last_name %>
-                </strong><br>
-                <small class="text-success">Hours: <%= client.duration_hours %></small><br>
-                <span class="badge bg-warning text-dark">
-                  <%= client.service_frequency.replace(/_/g, " " ) %>
-                </span><br>
-                <small class="text-muted">Last cleaned:
-                  <%= client.true_last_cleaned_date ? new
-                    Date(client.true_last_cleaned_date).toLocaleDateString("en-US") : "No history"
-                    %>
-
-                </small>
-              </div>
-              <% }); %>
-            
-          </div>
+          <% unassignedClients.forEach(function(client) { %>
+            <div id="unassigned-<%= client.client_id %>"
+              class="p-2 border rounded bg-light shadow-sm" style="min-width: 180px;"
+              draggable="true" ondragstart="handleDragStart(event)"
+              data-client='<%- JSON.stringify({ ...client, true_last_cleaned_date: client.true_last_cleaned_date }) %>'>
+              <strong>
+                <%= client.first_name %>
+                  <%= client.last_name %>
+              </strong><br>
+              <small class="text-success">Hours: <%= client.duration_hours %></small><br>
+              <span class="badge bg-warning text-dark">
+                <%= client.service_frequency.replace(/_/g, " " ) %>
+              </span><br>
+              <small class="text-muted">Last cleaned:
+                <%= client.true_last_cleaned_date ? new
+                  Date(client.true_last_cleaned_date).toLocaleDateString("en-US") : "No history"
+                %>
+              </small>
+            </div>
+          <% }); %>
         </div>
+      </div>
  
+      <!-- Calendar body -->
       <div class="table-responsive">
         <table class="table table-bordered calendar-table">
           <thead class="table-light text-center">
@@ -104,10 +103,10 @@
                       const totalHours = appointmentsForDay.reduce((sum, a) => sum + parseFloat(a.duration_hours || 0), 0);
                     %>
                       <strong><%= d %></strong><br>
-                    <small class="text-muted">
-                        Total: <span id="total-<%= cellDate.toISOString().slice(0, 10) %>">
+                    <small class="text-muted">Total: 
+                      <span id="total-<%= cellDate.toISOString().slice(0, 10) %>">
                             <%= totalHours %>
-                        </span> hrs
+                      </span> hrs
                     </small>
 
                     <% appointmentsForDay.forEach(function(a) { %>
@@ -128,7 +127,6 @@
                         <% } %>
                       </div>
                     <% }); %>
-
                     <% } %>
                   </td>
                 <% }); %>

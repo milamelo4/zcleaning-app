@@ -1,10 +1,8 @@
-
 <div class="d-flex min-vh-100">
     <%- include("../../partials/sidebar") %>
-    <div class="container mt-5" style="max-width: 700px;">
-    
-      <h2 class="mb-4 text-center text-primary">Create Employee Profile</h2>
-    
+
+    <div class="container mt-5" style="max-width: 700px;">    
+      <h2 class="mb-4 text-center text-primary">Create Employee Profile</h2>    
       <% if (messages.error_msg) { %>
         <div class="alert alert-danger"><%= messages.error_msg %></div>
       <% } %>

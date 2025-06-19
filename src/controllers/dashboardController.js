@@ -73,7 +73,7 @@ async function profile(req, res) {
     });
   } catch (err) {
     console.error("Error loading profile page:", err);
-    req.flash("error_msg", "Something went wrong.");
+    req.flash("error_msg", "Could not load your profile. Please try again.");
     res.redirect("/");
   }
 }

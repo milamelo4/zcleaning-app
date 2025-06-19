@@ -39,21 +39,20 @@ router.get("/auth/google/callback", (req, res, next) => {
   })(req, res, next);
 });
 
+// Unauthorized
 router.get("/request-pending", (req, res) => {
   res.render("pages/request-pending", { 
     title: "Request Pending", 
-    messages: req.flash() });
+  });
 });
 
-
+// Handle logout
 router.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
-
     req.flash("success_msg", "You have been logged out.");
     res.redirect("/"); // Redirect *before* destroying the session
   });
 });
-
 
 module.exports = router;

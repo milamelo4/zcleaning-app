@@ -10,7 +10,7 @@ const {
   createEmployeeProfile,
 } = require("../controllers/admin-controller");
 
-
+// Admin routes
 router.get('/promote', isLoggedIn, checkAdmin, showUserRolesPage);
 
 router.post("/promote", isLoggedIn, checkAdmin, updateUserRole);

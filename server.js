@@ -16,13 +16,14 @@ const flash = require("connect-flash");
 const pgSession = require("connect-pg-simple")(session);
 const pool = require("./src/config/db"); 
 
-
+//====================================
+// Routes setup
+//====================================
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const clientsRoutes = require("./src/routes/clients");
 const adminRoutes = require("./src/routes/admin");
 const authRoutes = require("./src/routes/auth");
 const appointmentsRoutes = require("./src/routes/appointments");
-
 
 const app = express();
 
@@ -45,7 +46,7 @@ app.use(
   session({
     store: new pgSession({
       pool, // 
-      tableName: "session", // optional: change if you want a different table name
+      tableName: "session", 
     }),
     secret: process.env.SESSION_SECRET || "secret-key",
     resave: false,
@@ -54,13 +55,12 @@ app.use(
   })
 );
 
-
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
 //====================================
-// Global middleware for flash messages and user info
+// Global middleware (flash messages and user info)
 //====================================
 app.use((req, res, next) => {
   res.locals.messages = req.flash();
@@ -75,7 +75,7 @@ app.use((req, res, next) => {
 
 
 //====================================
-// Routes setup
+// Routes 
 //====================================
 app.use(authRoutes);
 app.use("/", dashboardRoutes);

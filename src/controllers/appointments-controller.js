@@ -8,6 +8,7 @@ const {
   getAppointmentsByDate,
   getAppointmentsByRange,
 } = require("../models/appointments-model");
+
 const { getClientsForMonth } = require("../utils/scheduleHelpers");
 const { generateWhatsappSchedule } = require("../utils/formatWhatsappMessage");
 const { insertPaymentIfNeeded } = require("../models/clients-model"); 
@@ -30,16 +31,16 @@ async function previewMonthlySchedule(req, res) {
       scheduledClients = parsed.scheduledClients || [];
       unassignedClients = parsed.unassignedClients || [];
 
-      req.session.scheduleDraft = scheduledClients;
-      req.session.unassignedClients = unassignedClients;
+      // req.session.scheduleDraft = scheduledClients;
+      // req.session.unassignedClients = unassignedClients;
     } else {
       const clients = await getSchedulableClients();
       const generated = getClientsForMonth(clients, targetYear, targetMonth);
       scheduledClients = generated.scheduledClients;
       unassignedClients = generated.unassignedClients;
 
-      req.session.scheduleDraft = scheduledClients;
-      req.session.unassignedClients = unassignedClients;
+      // req.session.scheduleDraft = scheduledClients;
+      // req.session.unassignedClients = unassignedClients;
     }
 
     res.render("pages/appointments/monthly-preview", {
@@ -163,7 +164,6 @@ async function saveFinalizedSchedule(req, res) {
     // Step 5: Delete appointments that are no longer in the draft
     for (const leftoverKey in existingMap) {
       const appt = existingMap[leftoverKey];
-      //console.log("Deleting leftover appointment:", leftoverKey, appt);
 
       if (appt && appt.appointment_id) {
         try {

@@ -37,9 +37,9 @@ function getClientsForWeek(clients, weekStartDate, virtualLastDates = {}) {
         start.getDate() + ((preferredDayIndex + 7 - start.getDay()) % 7)
       );
 
-      if (preferredDayIndex > 5) return; // skip weekends 
     } else {
       const weekdayIndex =
+      // % modulo always gives a number between 0 and 4 (the indexes of the array) looping back to the start once it hits 5.
         availableWeekdays[notSetIndex % availableWeekdays.length];
       appointmentDate = new Date(start);
       appointmentDate.setDate(start.getDate() + (weekdayIndex - 1));
@@ -67,11 +67,10 @@ function getClientsForWeek(clients, weekStartDate, virtualLastDates = {}) {
       if (client.service_frequency === "once_a_month" && daysSince >= 28) {
         isDue = true;
       }
-      
     }
-
     if (!isDue) return;
 
+    // 3. Add to suggested if within the week range
     if (appointmentDate >= start && appointmentDate <= end) {
       suggested.push({
         client_id: client.client_id,
@@ -141,7 +140,6 @@ function getClientsForMonth(clients, year, month) {
       // Update the virtual last appointment date (used only for spacing logic)
       virtualLastDates[client.client_id] = client.appointment_date;
     });
-    
   }
 
     // After collecting all scheduled clients, find unassigned ones

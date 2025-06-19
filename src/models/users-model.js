@@ -25,8 +25,9 @@ async function createUser(
     ]);
     return result.rows[0];
   } catch (err) {
-    throw new Error("User creation failed: " + err.message);
-  }
+    console.error("Error creating user:", err);
+    throw new Error(`User creation failed: ${err.message}`);
+  } 
 }
 
 //====================================
@@ -38,7 +39,8 @@ async function findUserByEmail(email) {
     const result = await pool.query(sql, [email]);
     return result.rows[0]; // returns undefined if not found
   } catch (err) {
-    throw new Error("Failed to find user: " + err.message);
+    console.error("Could not finding user by email:", err);
+    throw new Error(`Failed to find user by email: ${err.message}`);
   }
 }
 
@@ -52,7 +54,8 @@ async function getAllUsers() {
     );
     return result.rows;
   } catch (err) {
-    throw new Error("Failed to get all users: " + err.message);
+    console.error("Error getting all users:", err);
+    throw new Error(`Failed to get all users: ${err.message}`);
   }
 }
 
@@ -69,7 +72,8 @@ async function updateRole(account_id, new_role) {
     const values = [new_role.toLowerCase(), account_id];
     return await pool.query(query, values);
   } catch (err) {
-    throw new Error("Failed to update user role: " + err.message);
+    console.error("Error updating user role:", err);
+    throw new Error(`Failed to update user role: ${err.message}`);
   }
 }
 
@@ -94,7 +98,8 @@ async function getUserById(account_id) {
     const result = await pool.query(sql, [account_id]);
     return result.rows[0];
   } catch (err) {
-    throw new Error("Failed to find user by ID: " + err.message);
+    console.error("Error finding user by ID: ", err);
+    throw new Error(`Failed to find user by ID: ${err.message}`);
   }
 }
 

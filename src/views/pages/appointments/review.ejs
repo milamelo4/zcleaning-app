@@ -2,11 +2,10 @@
   <%- include("../../partials/sidebar") %>
 
     <div class="flex-grow-1 p-4">
-      <h1>
-        <%= title %>
-      </h1>
+      <h1><%= title %></h1>
       <p class="text-muted">View, edit, or delete appointments already saved in
-        the system.</p>
+        the system.
+      </p>
 
       <!-- Filter by month and date -->
       <form action="/appointments/review" method="GET"
@@ -69,61 +68,63 @@
           action="/appointments/save-suggested" method="POST">
           <input type="hidden" name="appointments" id="appointmentsInput">
 
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>Client</th>
-                <th>Date</th>
-                <th>Hours</th>
-                <th>Price ($)</th>
-                <th>Notes</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody class="table-info">
-              <% appointments.forEach((appt)=> { %>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead>
                 <tr>
-                  <td>
-                    <%= appt.first_name %>
-                      <%= appt.last_name %>
-                  </td>
-                  <td>
-                    <%= new Date(appt.appointment_date).toLocaleDateString("en-US") %>
-                  </td>
-                  <td>
-                    <%= appt.duration_hours %>
-                  </td>
-            
-                  <td>
-                    <form id="updateForm-<%= appt.appointment_id %>"
-                      action="/appointments/<%= appt.appointment_id %>/update" method="POST"
-                      class="d-flex gap-2 align-items-center">
-            
-                      <input type="number" name="price" step="0.01"
-                        class="form-control form-control-sm" value="<%= appt.price || '' %>"
-                        style="max-width: 100px;">
-            
-                      <td>
-                        <input type="text" name="notes" class="form-control form-control-sm"
-                          value="<%= appt.notes || '' %>" style="max-width: 200px;">
-                      </td>
-            
-                      <td class="d-flex gap-3">
-                        <button type="submit" class="btn btn-sm btn-primary">
-                          <i class="bi bi-pencil-square"></i>
-                        </button>
-                        <button type="button" form="deleteForm-<%= appt.appointment_id %>"
-                          class="btn btn-sm btn-outline-danger"
-                          onclick="showDeleteModal('deleteForm-<%= appt.appointment_id %>')">
-                          <i class="bi bi-trash3"></i>
-                        </button>
-                      </td>
-                    </form>
-                  </td>
+                  <th>Client</th>
+                  <th>Date</th>
+                  <th>Hours</th>
+                  <th>Price ($)</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
                 </tr>
-                <% }) %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody class="table-info">
+                <% appointments.forEach((appt)=> { %>
+                  <tr>
+                    <td>
+                      <%= appt.first_name %>
+                        <%= appt.last_name %>
+                    </td>
+                    <td>
+                      <%= new Date(appt.appointment_date).toLocaleDateString("en-US") %>
+                    </td>
+                    <td>
+                      <%= appt.duration_hours %>
+                    </td>
+            
+                    <td>
+                      <form id="updateForm-<%= appt.appointment_id %>"
+                        action="/appointments/<%= appt.appointment_id %>/update" method="POST"
+                        class="d-flex gap-2 align-items-center">
+            
+                        <input type="number" name="price" step="0.01"
+                          class="form-control form-control-sm" value="<%= appt.price || '' %>"
+                          style="max-width: 100px;">
+            
+                        <td>
+                          <input type="text" name="notes" class="form-control form-control-sm"
+                            value="<%= appt.notes || '' %>" style="max-width: 200px;">
+                        </td>
+            
+                        <td class="d-flex gap-3">
+                          <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil-square"></i>
+                          </button>
+                          <button type="button" form="deleteForm-<%= appt.appointment_id %>"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="showDeleteModal('deleteForm-<%= appt.appointment_id %>')">
+                            <i class="bi bi-trash3"></i>
+                          </button>
+                        </td>
+                      </form>
+                    </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

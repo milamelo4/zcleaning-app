@@ -8,7 +8,6 @@
       <%- include('../partials/header') %>
       <%- include('../partials/navigation') %>
     </div>
-
     <main>
       <% if (typeof errors === 'undefined' && (messages.success_msg || messages.error_msg)) { %>
         <div class="container mt-3">
@@ -31,7 +30,7 @@
 
       <%- body %>
 
-      <!-- Offcanvas Mobile Sidebar -->
+      <!-- Mobile Sidebar -->
       <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
         <div class="offcanvas-header">
           <h5 class="offcanvas-title" id="mobileSidebarLabel">ZCleaning</h5>
@@ -47,19 +46,19 @@
         
             <!-- CLIENTS -->
             <li class="nav-item small text-uppercase text-muted px-2 mt-3">Clients</li>
-            <li class="nav-item"><a href="/clients" class="nav-link"><i
-                  class="bi bi-people me-2"></i> View Clients</a></li>
-            <li class="nav-item"><a href="/clients/missing-payments" class="nav-link"><i
-                  class="bi bi-exclamation-circle me-2"></i> Missing Payments</a></li>
+            <li class="nav-item"><a href="/clients" class="nav-link"><i class="bi bi-people me-2"></i> View Clients</a>
+            </li>
+            <li class="nav-item"><a href="/clients/missing-payments" class="nav-link"><i class="bi bi-exclamation-circle me-2"></i> Missing Payments</a>
+            </li>
         
             <!-- APPOINTMENTS -->
-            <li class="nav-item small text-uppercase text-muted px-2 mt-3">Appointments
-            </li>
+            <li class="nav-item small text-uppercase text-muted px-2 mt-3">Appointments</li>
             <li class="nav-item"><a href="/appointments/monthly-preview"
-                class="nav-link"><i class="bi bi-calendar-week me-2"></i> Calendar
-                Preview</a></li>
+                class="nav-link"><i class="bi bi-calendar-week me-2"></i> Calendar Preview</a>
+            </li>
             <li class="nav-item"><a href="/appointments/review" class="nav-link"><i
-                  class="bi bi-journal-check me-2"></i> Review Schedule</a></li>
+                  class="bi bi-journal-check me-2"></i> Review Schedule</a>
+            </li>
         
             <!-- PAYMENTS -->
             <li class="nav-item small text-uppercase text-muted px-2 mt-3">Payments</li>
@@ -76,17 +75,14 @@
             <li class="nav-item"><a href="/profile" class="nav-link"><i
                   class="bi bi-person-circle me-2"></i> My Profile</a></li>
             <li class="nav-item mt-3"><a href="/logout" class="nav-link text-danger"><i
-                  class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
-        
+                  class="bi bi-box-arrow-right me-2"></i> Logout</a>
+            </li>
           </ul>
         </div>
-        
       </div>
-
     </main>
     <%- include('../partials/footer') %>
   </div>
-
   <script>
     setTimeout(() => {
       const alerts = document.querySelectorAll('.alert.auto-dismiss');
@@ -101,5 +97,4 @@
   <script src="/js/main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

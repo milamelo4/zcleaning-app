@@ -11,13 +11,13 @@ const {
   updateAppointment,
 } = require("../controllers/appointments-controller");
 
-// Show preview for a given month/year
+// Show preview of monthly schedule
 router.get("/monthly-preview", isLoggedIn, previewMonthlySchedule);
 
 // Route to review the suggested schedule
 router.get("/review", isLoggedIn, viewSavedAppointments)
 
-// Save the suggested schedule
+// Save the suggested schedule to the database
 router.post("/save-suggested", isLoggedIn, saveFinalizedSchedule);
 
 // Save the draft schedule
@@ -31,8 +31,5 @@ router.post("/:id/delete", isLoggedIn, deleteAppointment);
 
 // Edit an appointment by ID
 router.post( "/:id/update", isLoggedIn, updateAppointment);
-
-
-
 
 module.exports = router;

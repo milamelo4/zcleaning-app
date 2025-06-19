@@ -28,6 +28,7 @@ async function createClient(data) {
     const result = await pool.query(sql, values);
     return result.rows[0];
   } catch (err) {
+    console.error("Error creating client:", err);
     throw new Error("Failed to create client: " + err.message);
   }
 }
@@ -41,6 +42,7 @@ async function getServiceTypes() {
     const result = await pool.query(sql);
     return result.rows;
   } catch (err) {
+    console.error("Error getting service types:", err);
     throw new Error("Failed to get service types: " + err.message);
   }
 }
@@ -89,6 +91,7 @@ async function getFilteredClients(statusFilter, search) {
 
     return result.rows;
   } catch (err) {
+    console.error("Error getting filtered clients:", err);
     throw new Error("Failed to get filtered clients: " + err.message);
   }
 }
@@ -102,6 +105,7 @@ async function getTotalClients() {
     const result = await pool.query(sql);
     return parseInt(result.rows[0].count, 10);
   } catch (err) {
+    console.error("Error counting clients:", err);
     throw new Error("Failed to count clients: " + err.message);
   }
 }
@@ -110,14 +114,19 @@ async function getTotalClients() {
 // Delete a client by ID  
 //====================================
 async function findClientByNameAndPhone(firstName, lastName, phoneNumber) {
-  const sql = `
-    SELECT * FROM clients
-    WHERE LOWER(first_name) = LOWER($1)
-      AND LOWER(last_name) = LOWER($2)
-      AND phone_number = $3
-  `;
-  const result = await pool.query(sql, [firstName, lastName, phoneNumber]);
-  return result.rows[0]; // will be undefined if not found
+  try{
+    const sql = `
+      SELECT * FROM clients
+      WHERE LOWER(first_name) = LOWER($1)
+        AND LOWER(last_name) = LOWER($2)
+        AND phone_number = $3
+    `;
+    const result = await pool.query(sql, [firstName, lastName, phoneNumber]);
+    return result.rows[0]; // will be undefined if not found
+  } catch (err) {
+    console.error("Error finding client:", err);
+    throw new Error("Failed to find client: " + err.message);
+  }
 }
 
 async function deleteById(id) {
@@ -146,6 +155,7 @@ async function getClientById(clientId) {
     );
     return result.rows[0];
   } catch (err) {
+    console.error("Error getting client by ID:", err);
     throw new Error("Failed to get client by ID: " + err.message);
   }
 }
@@ -172,16 +182,16 @@ async function updateClientById(clientId, clientData) {
     const query = `
       UPDATE clients
       SET first_name = $1,
-          last_name = $2,
-          phone_number = $3,
-          hired_date = $4,
-          service_hours = $5,
-          preferred_day = $6,
-          service_type_id = $7,
-          is_active_new = $8,
-          notes = $9,
-          price = $10,
-          full_house = $11
+        last_name = $2,
+        phone_number = $3,
+        hired_date = $4,
+        service_hours = $5,
+        preferred_day = $6,
+        service_type_id = $7,
+        is_active_new = $8,
+        notes = $9,
+        price = $10,
+        full_house = $11
       WHERE client_id = $12
     `;
 
@@ -201,6 +211,7 @@ async function updateClientById(clientId, clientData) {
     ]);
     return result; // You can check result.rowCount in the controller
   } catch (err) {
+    console.error("Error updating client:", err);
     throw new Error("Failed to update client: " + err.message);
   }
 }
@@ -231,6 +242,7 @@ async function getAllPaymentTypes(clientId) {
     const result = await pool.query(sql, [clientId]);
     return result.rows;
   } catch (err) {
+    console.error("Error getting payment types:", err);
     throw new Error("Failed to get payment types: " + err.message);
   }
 }
@@ -256,13 +268,14 @@ async function getAllMissingPayments() {
   FROM client_payment cp
   JOIN clients c ON cp.client_id = c.client_id
   WHERE cp.received_date IS NULL
-    AND cp.expected_received_date < CURRENT_DATE
+  AND cp.expected_received_date < CURRENT_DATE
   ORDER BY cp.expected_received_date ASC;
 `;
 
     const result = await pool.query(sql);
     return result.rows;
   } catch (err) {
+    console.error("Error getting missing payments:", err);
     throw new Error("Failed to get missing payments: " + err.message);
   }
 }
@@ -279,6 +292,7 @@ async function markPaymentAsReceived(paymentId, clientId) {
     const result = await pool.query(sql, [paymentId, clientId]);
     return result; // You can check result.rowCount in the controller
   } catch (err) {
+    console.error("Error marking payment as received:", err);
     throw new Error("Failed to mark payment as received: " + err.message);
   }
 }
@@ -296,6 +310,7 @@ async function unmarkPaymentAsReceived(paymentId, clientId) {
     const result = await pool.query(sql, [paymentId, clientId]);
     return result; // You can check result.rowCount in the controller
   } catch (err) {
+    console.error("Error unmarking payment as received:", err);
     throw new Error("Failed to unmark payment as received: " + err.message);
   }
 }
@@ -304,89 +319,94 @@ async function unmarkPaymentAsReceived(paymentId, clientId) {
 // Insert payment if it doesn't exist 
 //====================================
 async function insertPaymentIfNeeded(client_id, appointment_date) {
-  const due_date = new Date(appointment_date).toISOString().slice(0, 10);
+  try {
+    const due_date = new Date(appointment_date).toISOString().slice(0, 10);
 
-  // Check if the appointment exists
-  const apptResult = await pool.query(
-    `SELECT price FROM appointments WHERE client_id = $1 AND appointment_date = $2 LIMIT 1`,
-    [client_id, due_date]
-  );
+    // Check if the appointment exists
+    const apptResult = await pool.query(
+      `SELECT price FROM appointments WHERE client_id = $1 AND appointment_date = $2 LIMIT 1`,
+      [client_id, due_date]
+    );
 
-  if (apptResult.rowCount === 0) {
-    // console.log(
-    //   `Skipped: No appointment for client ${client_id} on ${due_date}`
-    // );
-    return;
-  }
+    if (apptResult.rowCount === 0) {
+      return;
+    }
 
-  // Check if payment already exists
-  const sqlCheck = `
-    SELECT 1 FROM client_payment
-    WHERE client_id = $1 AND due_date = $2
-    LIMIT 1
-  `;
-  const existing = await pool.query(sqlCheck, [client_id, due_date]);
+    // Check if payment already exists
+    const sqlCheck = `
+      SELECT 1 FROM client_payment
+      WHERE client_id = $1 AND due_date = $2
+      LIMIT 1
+    `;
+    const existing = await pool.query(sqlCheck, [client_id, due_date]);
 
-  if (existing.rowCount > 0) {
-    // console.log(
-    //   `Skipped: Payment already exists for client ${client_id} on ${due_date}`
-    // );
-    return;
-  }
+    if (existing.rowCount > 0) {
+      return "Payment already exists — skipped.";
+    }
 
-  // Extract appointment price
-  const apptPrice = apptResult.rows[0].price || 0.0;
+    // Extract appointment price
+    const apptPrice = apptResult.rows[0].price || 0.0;
 
-  // Calculate expected received date (7 days later)
-  const expectedDateObj = new Date(appointment_date);
-  expectedDateObj.setDate(expectedDateObj.getDate() + 7);
-  const expected_received_date = expectedDateObj.toISOString().slice(0, 10);
+    // Calculate expected received date (7 days later)
+    const expectedDateObj = new Date(appointment_date);
+    expectedDateObj.setDate(expectedDateObj.getDate() + 7);
+    const expected_received_date = expectedDateObj.toISOString().slice(0, 10);
 
-  // Insert payment with price
-  const sqlInsert = `
-    INSERT INTO client_payment (
+    // Insert payment with price
+    const sqlInsert = `
+      INSERT INTO client_payment (
+        client_id,
+        payment_type,
+        payment_schedule,
+        due_date,
+        expected_received_date,
+        price
+      ) VALUES ($1, $2, $3, $4, $5, $6)
+    `;
+    await pool.query(sqlInsert, [
       client_id,
-      payment_type,
-      payment_schedule,
+      "cash",
+      "monthly",
       due_date,
       expected_received_date,
-      price
-    ) VALUES ($1, $2, $3, $4, $5, $6)
-  `;
-  await pool.query(sqlInsert, [
-    client_id,
-    "cash",
-    "monthly",
-    due_date,
-    expected_received_date,
-    apptPrice,
-  ]);
+      apptPrice,
+    ]);
+
+    return;
+  } catch (err) {
+    console.error("Error inserting payment:", err);
+    throw new Error(`Failed to insert payment: ${err.message}`);
+  }
 }
 
 //====================================
 // Show all payments
 //====================================
 async function getAllPayments() {
-  const sql = `
-  SELECT 
-    cp.payment_id,
-    cp.payment_type, 
-    cp.payment_schedule, 
-    cp.due_date, 
-    cp.received_date,
-    cp.expected_received_date,
-    cp.price,
-    (cp.received_date IS NULL AND cp.expected_received_date < CURRENT_DATE) AS is_overdue,
-    c.first_name, 
-    c.last_name
-  FROM client_payment cp
-  JOIN clients c ON cp.client_id = c.client_id
-  ORDER BY cp.due_date ASC
-`;
-  const result = await pool.query(sql);
-  return result.rows;
+  try{
+    const sql = `
+    SELECT 
+      cp.payment_id,
+      cp.payment_type, 
+      cp.payment_schedule, 
+      cp.due_date, 
+      cp.received_date,
+      cp.expected_received_date,
+      cp.price,
+      (cp.received_date IS NULL AND cp.expected_received_date < CURRENT_DATE) AS is_overdue,
+      c.first_name, 
+      c.last_name
+    FROM client_payment cp
+    JOIN clients c ON cp.client_id = c.client_id
+    ORDER BY cp.due_date ASC
+  `;
+    const result = await pool.query(sql);
+    return result.rows;
+  } catch (err) {
+    console.error("Error getting payments:", err);
+    throw new Error("Failed to get payments: " + err.message);
+  }
 }
-
 
 module.exports = {
   createClient,

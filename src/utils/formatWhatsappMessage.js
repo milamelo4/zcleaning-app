@@ -26,7 +26,6 @@ function generateWhatsappSchedule(appointments) {
     });
     message += `\n`;
   }
-
   return message.trim();
 }
 

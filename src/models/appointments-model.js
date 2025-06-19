@@ -1,3 +1,4 @@
+const e = require("connect-flash");
 const pool = require("../config/db");
 
 //====================================
@@ -27,6 +28,7 @@ async function getUpcomingAppointments() {
     const result = await pool.query(sql);
     return result.rows;
   } catch (err) {
+    console.error("Error getting upcoming appointments:", err);
     throw new Error("Failed to get upcoming appointments: " + err.message);
   }
 }
@@ -35,44 +37,52 @@ async function getUpcomingAppointments() {
 // Create a new appointment
 //====================================
 async function createAppointment(appointment) {
-  const {
-    client_id,
-    appointment_date,
-    service_type_id,
-    duration_hours,
-    price,
-    notes,
-  } = appointment;
+  try {
+    const {
+      client_id,
+      appointment_date,
+      service_type_id,
+      duration_hours,
+      price,
+      notes,
+    } = appointment;
 
-  // Step 1: Check for existing appointment
-  const existsQuery = `
-    SELECT 1 FROM appointments
-    WHERE client_id = $1 AND appointment_date = $2
-    LIMIT 1
-  `;
-  const existsResult = await pool.query(existsQuery, [
-    client_id,
-    appointment_date,
-  ]);
+    // Step 1: Check for existing appointment
+    const existsQuery = `
+      SELECT 1 FROM appointments
+      WHERE client_id = $1 AND appointment_date = $2
+      LIMIT 1
+    `;
+    const existsResult = await pool.query(existsQuery, [
+      client_id,
+      appointment_date,
+    ]);
 
-  if (existsResult.rowCount > 0) {
-        return; // skip insert
+    if (existsResult.rowCount > 0) {
+      return; // skip insert
+    }
+
+    // Step 2: Insert appointment
+    const insertQuery = `
+      INSERT INTO appointments
+        (client_id, appointment_date, service_type_id, duration_hours, price, notes)
+      VALUES ($1, $2, $3, $4, $5, $6)
+    `;
+    await pool.query(insertQuery, [
+      client_id,
+      appointment_date,
+      service_type_id,
+      duration_hours,
+      price,
+      notes,
+    ]);
+
+    return "Appointment inserted successfully.";
+  } catch (err) {
+    console.error(
+      "Error creating appointment for client " + appointment?.client_id, err);
+    throw new Error(`Failed to create appointment: ${err.message}`);
   }
-
-  // Step 2: Insert appointment
-  const insertQuery = `
-    INSERT INTO appointments
-      (client_id, appointment_date, service_type_id, duration_hours, price, notes)
-    VALUES ($1, $2, $3, $4, $5, $6)
-  `;
-  await pool.query(insertQuery, [
-    client_id,
-    appointment_date,
-    service_type_id,
-    duration_hours,
-    price,
-    notes,
-  ]);
 }
 
 //====================================
@@ -104,6 +114,7 @@ async function getSchedulableClients() {
     const result = await pool.query(sql);
     return result.rows;
   } catch (err) {
+    console.error("Error getting schedulable clients:", err);
     throw new Error("Failed to get schedulable clients: " + err.message);
   }
 }
@@ -151,62 +162,82 @@ async function deleteAppointmentById(appointmentId) {
 // Get appointments by date
 //====================================
 async function getAppointmentsByDate(date) {
-  const query = `
-    SELECT a.*, c.first_name, c.last_name
-    FROM appointments a
-    JOIN clients c ON a.client_id = c.client_id
-    WHERE a.appointment_date = $1
-    ORDER BY a.appointment_date ASC
-  `;
-  const result = await pool.query(query, [date]);
-  return result.rows;
+  try {
+    const query = `
+      SELECT a.*, c.first_name, c.last_name
+      FROM appointments a
+      JOIN clients c ON a.client_id = c.client_id
+      WHERE a.appointment_date = $1
+      ORDER BY a.appointment_date ASC
+    `;
+    const result = await pool.query(query, [date]);
+    return result.rows;
+  } catch (err) {
+    console.error("Error getting appointments by date:", err);
+    throw new Error("Failed to get appointments by date: " + err.message);
+  }
 }
 
 //====================================
 // Get appointments by date range
 //====================================
 async function getAppointmentsByRange(startDate, endDate) {
-  const query = `
-  SELECT a.*, c.first_name, c.last_name
-  FROM appointments a
-  JOIN clients c ON a.client_id = c.client_id
-  WHERE a.appointment_date >= $1::date AND a.appointment_date <= $2::date
-  ORDER BY a.appointment_date ASC
-`;
-  const result = await pool.query(query, [startDate, endDate]);
-  return result.rows;
+  try{
+    const query = `
+    SELECT a.*, c.first_name, c.last_name
+    FROM appointments a
+    JOIN clients c ON a.client_id = c.client_id
+    WHERE a.appointment_date >= $1::date AND a.appointment_date <= $2::date
+    ORDER BY a.appointment_date ASC
+  `;
+    const result = await pool.query(query, [startDate, endDate]);
+    return result.rows;
+  } catch (err) {
+    console.error("Error getting appointments by date range:", err);
+    throw err;
+  }
 }
 
 //====================================
 // Update appointment details
 //====================================
 async function updateAppointmentDetails(id, price, notes) {
-  // Update appointment
-  const updateApptQuery = `
-    UPDATE appointments
-    SET price = $1,
-        notes = $2
-    WHERE appointment_id = $3
-  `;
-  await pool.query(updateApptQuery, [price, notes, id]);
-
-  // Update matching payment (based on client + date)
-  const fetchApptQuery = `
-    SELECT client_id, appointment_date
-    FROM appointments
-    WHERE appointment_id = $1
-  `;
-  const result = await pool.query(fetchApptQuery, [id]);
-
-  if (result.rowCount > 0) {
-    const { client_id, appointment_date } = result.rows[0];
-
-    const updatePaymentQuery = `
-      UPDATE client_payment
-      SET price = $1
-      WHERE client_id = $2 AND due_date = $3
+  try {
+    const updateApptQuery = `
+      UPDATE appointments
+      SET price = $1,
+          notes = $2
+      WHERE appointment_id = $3
     `;
-    await pool.query(updatePaymentQuery, [price, client_id, appointment_date]);
+    await pool.query(updateApptQuery, [price, notes, id]);
+
+    // Fetch appointment to find client + date
+    const fetchApptQuery = `
+      SELECT client_id, appointment_date
+      FROM appointments
+      WHERE appointment_id = $1
+    `;
+    const result = await pool.query(fetchApptQuery, [id]);
+
+    if (result.rowCount > 0) {
+      const { client_id, appointment_date } = result.rows[0];
+
+      const updatePaymentQuery = `
+        UPDATE client_payment
+        SET price = $1
+        WHERE client_id = $2 AND due_date = $3
+      `;
+      await pool.query(updatePaymentQuery, [
+        price,
+        client_id,
+        appointment_date,
+      ]);
+    }
+
+    return; 
+  } catch (err) {
+    console.error(`Error updating appointment ID ${id}:`, err);
+    throw err;
   }
 }
 
@@ -214,21 +245,26 @@ async function updateAppointmentDetails(id, price, notes) {
 // Get appointments for employee in the next 14 days
 //====================================
 async function getAppointmentsForEmployee() {
-  const sql = `
-    SELECT 
-      a.appointment_date,
-      a.duration_hours,
-      c.first_name,
-      c.last_name
-    FROM appointments a
-    JOIN clients c ON a.client_id = c.client_id
-    WHERE a.appointment_date >= CURRENT_DATE
-      AND a.appointment_date < CURRENT_DATE + INTERVAL '14 days'
-    ORDER BY a.appointment_date ASC;
-  `;
+  try {
+    const sql = `
+      SELECT 
+        a.appointment_date,
+        a.duration_hours,
+        c.first_name,
+        c.last_name
+      FROM appointments a
+      JOIN clients c ON a.client_id = c.client_id
+      WHERE a.appointment_date >= CURRENT_DATE
+        AND a.appointment_date < CURRENT_DATE + INTERVAL '14 days'
+      ORDER BY a.appointment_date ASC;
+    `;
 
-  const result = await pool.query(sql);
-  return result.rows;
+    const result = await pool.query(sql);
+    return result.rows;
+  } catch (err) {
+    console.error("Error getting appointments for employee:", err);
+    throw err;
+  }
 }
 
 module.exports = { 

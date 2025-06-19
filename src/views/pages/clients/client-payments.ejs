@@ -29,15 +29,13 @@
                     <%= type.due_date ? new Date(type.due_date).toLocaleDateString() : '—' %>
                       <% if (type.is_overdue) { %>
                         <div class="text-danger small">Missing payment!</div>
-                        <% } %>
+                      <% } %>
                   </td>
                   <td>
                     <%= type.received_date ? new Date(type.received_date).toLocaleDateString()
                       : '—' %>
-                  </td>
-                  
-                  <td>$<%= type.price ? Number(type.price).toFixed(2) : '0.00' %>
-                  </td>
+                  </td>                  
+                  <td>$<%= type.price ? Number(type.price).toFixed(2) : '0.00' %></td>
                   <td>
                     <% if (!type.received_date) { %>
                       <form method="POST"
@@ -50,20 +48,16 @@
                           <button class="btn btn-sm btn-outline-secondary">Unmark</button>
                         </form>
                         
-                        <% } %>
+                    <% } %>
                   </td>
-                  
                 </tr>
                 <% }) %>
-              
             </tbody>
           </table>
         </div>
       <% } else { %>
         <p>No payment types found.</p>
       <% } %>
-
       <a href="/clients" class="btn btn-outline-secondary mt-4">← Back to Clients</a>      
-
     </div>
 </div>
