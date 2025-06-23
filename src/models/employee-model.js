@@ -6,9 +6,18 @@ const pool = require('../config/db');
 async function getAllEmployees() {
   try {
     const sql = `
-      SELECT employee_id, first_name, last_name, phone_number, hire_date, hourly_pay_rate, employment_status, is_active
-      FROM employee
-      ORDER BY last_name, first_name
+       SELECT 
+      employee_id,
+      first_name,
+      last_name,
+      phone_number,
+      email,
+      hire_date,
+      employment_status,
+      hourly_pay_rate,
+      is_active
+    FROM employee
+    ORDER BY last_name
     `;
     const result = await pool.query(sql);
     return result.rows;
@@ -134,10 +143,92 @@ async function checkIfEmployeeExists(account_id) {
   }
 }
 
+//====================================
+//Delete employee by ID
+//====================================
+async function deleteEmployeeById(employeeId) {
+  try {
+    const sql = `DELETE FROM employee WHERE employee_id = $1`;
+    await pool.query(sql, [employeeId]);
+  } catch (err) {
+    console.error("Error deleting employee:", err);
+    throw new Error("Failed to delete employee: " + err.message);
+  }
+}
+
+//=====================================
+// Get employee by ID
+//=====================================
+async function getEmployeeById(employeeId) {
+  try {
+    const sql = `
+      SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        phone_number,
+        email,
+        hire_date,
+        employment_status,
+        hourly_pay_rate,
+        is_active
+      FROM employee
+      WHERE employee_id = $1
+    `;
+    const result = await pool.query(sql, [employeeId]);
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error fetching employee by ID:", err);
+    throw new Error("Failed to get employee by ID: " + err.message);
+  }
+}
+
+//=====================================
+// Update employee profile
+//=====================================
+async function updateEmployeeById(id, data) {
+  const sql = `
+    UPDATE employee SET
+      first_name = $1,
+      last_name = $2,
+      phone_number = $3,
+      email = $4,
+      hire_date = $5,
+      employment_status = $6,
+      hourly_pay_rate = $7,
+      is_active = $8,
+      last_update = CURRENT_TIMESTAMP
+    WHERE employee_id = $9
+  `;
+
+  const values = [
+    data.first_name,
+    data.last_name,
+    data.phone_number,
+    data.email,
+    data.hire_date,
+    data.employment_status,
+    data.hourly_pay_rate,
+    data.is_active,
+    id,
+  ];
+
+  try {
+    await pool.query(sql, values);
+  } catch (err) {
+    console.error("Error updating employee:", err);
+    throw new Error("Failed to update employee: " + err.message);
+  }
+}
+
+
 module.exports = {
   getAllEmployees,
   getEmployeeProfileByEmail,
   getEmployeeProfileByAccountId,
   insertEmployee,
   checkIfEmployeeExists,
+  deleteEmployeeById,
+  getEmployeeById,
+  updateEmployeeById,
 };

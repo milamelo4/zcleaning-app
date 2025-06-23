@@ -1,0 +1,74 @@
+<div class="d-flex min-vh-100">
+    <%- include("../../partials/sidebar") %>
+    
+    <div class="container mt-4">
+        <h1>Edit Employee</h1>
+
+        <form action="/admin/employees/edit/<%= employee.employee_id %>"
+            method="POST" class="row g-3">
+            <div class="col-md-6">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" name="first_name" id="first_name"
+                    class="form-control" value="<%= employee.first_name %>"
+                    required>
+            </div>
+            <div class="col-md-6">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" name="last_name" id="last_name"
+                    class="form-control" value="<%= employee.last_name %>"
+                    required>
+            </div>
+            <div class="col-md-6">
+                <label for="phone_number" class="form-label">Phone
+                    Number</label>
+                <input type="text" name="phone_number" id="phone_number"
+                    class="form-control" value="<%= employee.phone_number %>"
+                    required>
+            </div>
+            <div class="col-md-6">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" id="email" class="form-control"
+                    value="<%= employee.email %>" required>
+            </div>
+            <div class="col-md-6">
+                <label for="hire_date" class="form-label">Hire Date</label>
+                <input type="date" name="hire_date" id="hire_date"
+                    class="form-control"
+                    value="<%= employee.hire_date ? employee.hire_date.toISOString().split('T')[0] : '' %>">
+            </div>
+            <div class="col-md-6">
+                <label for="hourly_pay_rate" class="form-label">Hourly
+                    Pay</label>
+                <input type="number" name="hourly_pay_rate" id="hourly_pay_rate"
+                    step="0.01" class="form-control"
+                    value="<%= employee.hourly_pay_rate %>">
+            </div>
+            <div class="col-md-6">
+                <label for="employment_status" class="form-label">Status</label>
+                <div class="col-md-6">
+                    <label for="employment_status" class="form-label">Status</label>
+                    <select name="employment_status" id="employment_status" class="form-select">
+                        <option value="full_time" <%=employee.employment_status==="full_time"
+                            ? "selected" : "" %>>Full-time</option>
+                        <option value="part_time" <%=employee.employment_status==="part_time"
+                            ? "selected" : "" %>>Part-time</option>
+                    </select>
+                </div>
+                  
+            </div>
+            <div class="col-md-6">
+                <label for="is_active" class="form-label">Is Active</label>
+                <select name="is_active" id="is_active" class="form-select">
+                    <option value="true" <%=employee.is_active ? "selected" : ""
+                        %>>Yes</option>
+                    <option value="false" <%=!employee.is_active ? "selected"
+                        : "" %>>No</option>
+                </select>
+            </div>
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-success">Save
+                    Changes</button>
+            </div>
+        </form>
+    </div>
+</div>

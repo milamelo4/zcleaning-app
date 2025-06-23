@@ -55,9 +55,20 @@
             </li>
 
             <li class="nav-item">
-                <a href="/admin/promote" class="nav-link text-white hover-underline">
-                    <i class="bi bi-person-gear me-2"></i> Approve Users
-                </a>
+                <a href="#employeesMenu" class="nav-link text-white hover-underline" data-bs-toggle="collapse"
+                   role="button">
+                    <i class="bi bi-person-workspace me-2"></i> Employees
+                    <i class="bi bi-chevron-down"></i>
+                 </a>    
+                <div class="collapse ps-3" id="employeesMenu">
+                    <a href="/admin/promote" class="nav-link text-white hover-underline">
+                            Promote User
+                    </a>
+                    <a href="/admin/employees" class="nav-link text-white hover-underline">
+                        All Employees
+                    </a>
+                </div>
+               
             </li>
 
             <li class="nav-item mt-4">

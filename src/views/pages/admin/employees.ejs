@@ -1,0 +1,53 @@
+<div class="d-flex min-vh-100">
+    <%- include("../../partials/sidebar") %>    
+    <div class="container mt-4">
+      <h1>All Employees</h1>
+      <p class="text-muted">View employee info or edit/delete as needed.</p>
+    
+      <% if (employees.length === 0) { %>
+        <p>No employees found.</p>
+      <% } else { %>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Hire Date</th>
+                    <th>Status</th>
+                    <th>Pay Rate</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% employees.forEach(emp=> { %>
+                    <tr>
+                        <td><%= emp.first_name %> <%= emp.last_name %></td>
+                        <td><%= emp.phone_number %></td>
+                        <td><%= emp.email %></td>
+                        <td><%= emp.hire_date ? new Date(emp.hire_date).toLocaleDateString("en-US") : "N/A" %></td>
+                        <td><%= emp.employment_status %></td>
+                        <td><%= emp.hourly_pay_rate ? `$${Number(emp.hourly_pay_rate).toFixed(2)}` : "N/A" %></td>
+                        <td><%= emp.is_active ? "Yes" : "No" %></td>
+                        <td>
+                            <a href="/admin/employees/edit/<%= emp.employee_id %>"
+                                class="btn btn-sm btn-primary">Edit</a>
+                                <form id="delete-form-<%= emp.employee_id %>"
+                                    action="/admin/employees/delete/<%= emp.employee_id %>" method="POST"
+                                    class="d-inline">
+                                    <button type="button" class="btn btn-sm btn-danger"
+                                        onclick="showDeleteModal('delete-form-<%= emp.employee_id %>')">
+                                        Delete
+                                    </button>                           
+                                </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+        </table>
+      <% } %>
+    </div>
+</div>
+
+<%- include("../../partials/deleteModal") %>

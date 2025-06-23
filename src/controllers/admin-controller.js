@@ -1,5 +1,15 @@
-const { getAllUsers, getUserById, updateRole } = require("../models/users-model");
-const { insertEmployee, checkIfEmployeeExists } = require("../models/employee-model");
+const { getAllUsers, 
+  getUserById, 
+  updateRole 
+} = require("../models/users-model");
+const {
+  insertEmployee,
+  checkIfEmployeeExists,
+  getAllEmployees,
+  deleteEmployeeById,
+  getEmployeeById,
+  updateEmployeeById,
+} = require("../models/employee-model");
 
 const ALLOWED_ROLES = ["admin", "employee", "unauthorized"];
 
@@ -94,9 +104,96 @@ async function createEmployeeProfile(req, res) {
   }
 }
 
+async function showAllEmployees(req, res) {
+  try {
+    const employees = await getAllEmployees();
+
+    res.render("pages/admin/employees", {
+      title: "All Employees",
+      user: req.user,
+      employees,
+    });
+  } catch (err) {
+    console.error("Failed to load employees:", err);
+    req.flash("error_msg", "Something went wrong loading employees.");
+    res.redirect("/dashboard");
+  }
+}
+
+async function deleteEmployee(req, res) {
+  const employeeId = parseInt(req.params.id);
+  try {
+    await deleteEmployeeById(employeeId);
+    req.flash("success_msg", "Employee deleted successfully.");
+  } catch (error) {
+    console.error("Failed to delete employee:", error);
+    req.flash("error_msg", "Something went wrong deleting the employee.");
+  }
+  res.redirect("/admin/employees");
+}
+
+async function showEditEmployeeForm(req, res) {
+  const employeeId = parseInt(req.params.id);
+  try {
+    const employee = await getEmployeeById(employeeId);
+    if (!employee) {
+      req.flash("error_msg", "Employee not found.");
+      return res.redirect("/admin/employees");
+    }
+
+    res.render("pages/admin/employee-edit", {
+      title: "Edit Employee",
+      user: req.user,
+      employee,
+    });
+  } catch (error) {
+    console.error("Failed to load employee:", error);
+    req.flash("error_msg", "Something went wrong.");
+    res.redirect("/admin/employees");
+  }
+}
+
+async function updateEmployeeProfile(req, res) {
+  const employeeId = parseInt(req.params.id);
+  const {
+    first_name,
+    last_name,
+    phone_number,
+    email,
+    hire_date,
+    employment_status,
+    hourly_pay_rate,
+    is_active,
+  } = req.body;
+
+  try {
+    await updateEmployeeById(employeeId, {
+      first_name,
+      last_name,
+      phone_number,
+      email,
+      hire_date: hire_date || null,
+      employment_status,
+      hourly_pay_rate: parseFloat(hourly_pay_rate),
+      is_active: is_active === "true",
+    });
+
+    req.flash("success_msg", "Employee updated successfully.");
+    res.redirect("/admin/employees");
+  } catch (error) {
+    console.error("Failed to update employee:", error);
+    req.flash("error_msg", "Something went wrong updating the employee.");
+    res.redirect("/admin/employees");
+  }
+}
+
 module.exports = {
   showUserRolesPage,
   updateUserRole,
   showCreateEmployeeForm,
   createEmployeeProfile,
+  showAllEmployees,
+  deleteEmployee,
+  showEditEmployeeForm,
+  updateEmployeeProfile,
 };
