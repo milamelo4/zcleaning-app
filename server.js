@@ -87,7 +87,7 @@ app.get("/", (req, res) => {
   res.render("pages/index", { title: "Home" });
 });
 
-// routes/static.js or wherever you handle static views
+// routes/static.js 
 app.get("/privacy-policy", (req, res) => {
   res.render("pages/privacy-policy", { title: "Privacy Policy" });
 });
@@ -95,7 +95,6 @@ app.get("/privacy-policy", (req, res) => {
 app.get("/terms-of-service", (req, res) => {
   res.render("pages/terms-of-service", { title: "Terms of Service" });
 });
-
 
 // 404 handler (must be after all other routes)
 app.use((req, res, next) => {
