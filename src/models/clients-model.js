@@ -408,6 +408,36 @@ async function getAllPayments() {
   }
 }
 
+//====================================
+// Get payments by date
+//====================================
+async function getPaymentsByDate(date) {
+  try {
+    const sql = `
+      SELECT 
+        cp.payment_id,
+        cp.payment_type, 
+        cp.payment_schedule, 
+        cp.due_date, 
+        cp.received_date,
+        cp.expected_received_date,
+        cp.price,
+        (cp.received_date IS NULL AND cp.expected_received_date < CURRENT_DATE) AS is_overdue,
+        c.first_name, 
+        c.last_name
+      FROM client_payment cp
+      JOIN clients c ON cp.client_id = c.client_id
+      WHERE cp.due_date = $1
+      ORDER BY cp.due_date ASC
+    `;
+    const result = await pool.query(sql, [date]);
+    return result.rows;
+  } catch (err) {
+    console.error("Error getting payments by date:", err);
+    throw new Error("Failed to get filtered payments: " + err.message);
+  }
+}
+
 module.exports = {
   createClient,
   getServiceTypes,
@@ -423,4 +453,5 @@ module.exports = {
   getTotalClients,
   insertPaymentIfNeeded,
   getAllPayments,
+  getPaymentsByDate,
 }

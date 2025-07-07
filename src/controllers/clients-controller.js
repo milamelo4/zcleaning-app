@@ -11,6 +11,7 @@ const {
   unmarkPaymentAsReceived,
   findClientByNameAndPhone,
   getAllPayments,
+  getPaymentsByDate,
 } = require("../models/clients-model");
 
 const {
@@ -337,12 +338,19 @@ async function unmarkPaymentReceivedController(req, res) {
 
 async function showAllPayments(req, res) {
   try {
-    const allPayments = await getAllPayments();
+    const { date } = req.query; // looks for ?date=2025-06-01 or similar
+    let payments;
+
+    if (date) {
+      payments = await getPaymentsByDate(date); // we’ll create this next
+    } else {
+      payments = await getAllPayments();
+    }
 
     res.render("pages/clients/all-payments", {
       title: "All Payments",
       user: req.user,
-      payments: allPayments,
+      payments,
     });
   } catch (err) {
     console.error("Failed to load all payments:", err);

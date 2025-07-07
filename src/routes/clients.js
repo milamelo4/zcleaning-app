@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const isLoggedIn = require("../middleware/authMiddleware");
+const isAdmin = require("../middleware/checkAdmin");
 const {
   postNewClient,
   showAddClientForm,
@@ -20,33 +21,34 @@ const validateClient = require("../validations/client-validation");
 const handleValidationErrors = require("../middleware/handleValidationErrors");
 
 //  Route to add a new client
-router.get("/add", isLoggedIn, showAddClientForm);
+router.get("/add", isLoggedIn, isAdmin ,showAddClientForm);
 
 // Route to view all clients
-router.get("/", isLoggedIn, showAllClients);
+router.get("/", isLoggedIn, isAdmin,showAllClients);
 
 // Form submission
-router.post("/add", isLoggedIn, validateClient, handleValidationErrors, postNewClient);
+router.post("/add", isLoggedIn, isAdmin, validateClient, handleValidationErrors, postNewClient);
 
 // delete client
-router.post("/delete/:id", isLoggedIn, deleteClient);
+router.post("/delete/:id", isLoggedIn, isAdmin, deleteClient);
 
 // Route to edit a client
-router.get("/edit/:id", isLoggedIn, getEditClientView);
+router.get("/edit/:id", isLoggedIn, isAdmin, getEditClientView);
 
 // Route to update a client
-router.post("/update/:id", isLoggedIn, validateClient, handleValidationErrors, updateClient);
+router.post("/update/:id", isLoggedIn, isAdmin, validateClient, handleValidationErrors, updateClient);
 
 //route to get all payments for a client
-router.get("/:id/payments", isLoggedIn, showClientPayments);
+router.get("/:id/payments", isLoggedIn, isAdmin, showClientPayments);
 
 // Route to get all missing payment 
-router.get("/missing-payments", isLoggedIn, showMissingPayments);
+router.get("/missing-payments", isLoggedIn, isAdmin, showMissingPayments);
 
 // Route to post new payment
 router.post(
   "/:clientId/payments/:paymentId/mark-paid",
   isLoggedIn,
+  isAdmin,
   markPaymentReceivedController
 );
 
@@ -54,10 +56,11 @@ router.post(
 router.post(
   "/:clientId/payments/:paymentId/unmark-paid",
   isLoggedIn,
+  isAdmin,
   unmarkPaymentReceivedController
 );
 
 // route to show client payments
-router.get("/all-payments", isLoggedIn, showAllPayments);  
+router.get("/all-payments", isLoggedIn, isAdmin, showAllPayments);  
 
 module.exports = router;
