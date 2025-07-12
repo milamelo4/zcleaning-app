@@ -342,7 +342,7 @@ async function showAllPayments(req, res) {
     let payments;
 
     if (date) {
-      payments = await getPaymentsByDate(date); // we’ll create this next
+      payments = await getPaymentsByDate(date); 
     } else {
       payments = await getAllPayments();
     }
