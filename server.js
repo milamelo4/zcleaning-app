@@ -52,12 +52,13 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24,
-      secure: false,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      secure: process.env.RENDER === "true", // ✅ only true on Render
       sameSite: "lax",
     },
   })
 );
+
 
 
 app.use(flash());
