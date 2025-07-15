@@ -1,9 +1,8 @@
 //====================================
 // Local environment and config
 //====================================
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
+require("dotenv").config(); 
+
 
 
 require("./src/config/passport");
@@ -89,7 +88,7 @@ app.use((req, res, next) => {
 //====================================
 // Routes 
 //====================================
-app.use(authRoutes);
+app.use("/auth", authRoutes);
 app.use("/", dashboardRoutes);
 app.use("/clients", clientsRoutes);
 app.use("/admin", adminRoutes);
