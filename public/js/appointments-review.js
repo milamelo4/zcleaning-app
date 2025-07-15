@@ -1,3 +1,5 @@
+// runs in the browser - allows drag-and-drop scheduling of appointments
+// collects scheduled, convert to an array, stores as JSON draft in a hidden input field
 document.addEventListener("DOMContentLoaded", () => {
   // --------- Handle form submission for database save ---------
   const form = document.getElementById("postScheduleForm");
@@ -61,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --------- Handle date search filter ---------
   // --------- Handle date search filter ---------
   const dateInput = document.getElementById("dateInput");
 

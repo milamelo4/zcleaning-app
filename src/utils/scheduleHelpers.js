@@ -1,3 +1,4 @@
+// runs on the server - Called by getClientsForMonth to handle logic for each week individually
 function getClientsForWeek(clients, weekStartDate, virtualLastDates = {}) {
   const start = new Date(weekStartDate);
   const end = new Date(start);
@@ -98,6 +99,9 @@ function getClientsForWeek(clients, weekStartDate, virtualLastDates = {}) {
   return suggested;
 }
 
+// Runs on the server - used to generate the schedule for clients based on their 
+// preferences and last appointment dates and service frequency.
+// Returns an array of clients scheduled for the month, and an array of unassigned clients.
 function getClientsForMonth(clients, year, month) {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
