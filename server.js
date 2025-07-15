@@ -45,15 +45,20 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
     store: new pgSession({
-      pool, // 
-      tableName: "session", 
+      pool,
+      tableName: "session",
     }),
     secret: process.env.SESSION_SECRET || "secret-key",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
   })
 );
+
 
 app.use(flash());
 app.use(passport.initialize());
