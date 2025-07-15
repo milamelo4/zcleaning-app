@@ -53,7 +53,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.RENDER === "true", // This works with Render's env
       sameSite: "lax",
     },
   })
