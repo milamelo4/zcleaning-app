@@ -248,13 +248,8 @@ function saveScheduleDraft(req, res) {
     unassignedClients: unassigned,
   };
 
-  const filePath = path.join(
-    __dirname,
-    "..",
-    "..",
-    "drafts",
-    "schedule-draft.json"
-  );
+  const filePath = path.join(process.cwd(), "drafts", "schedule-draft.json");
+
 
   fs.writeFile(filePath, JSON.stringify(draftData, null, 2), (err) => {
     if (err) {
