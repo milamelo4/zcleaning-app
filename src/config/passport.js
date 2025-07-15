@@ -37,11 +37,19 @@ passport.use(
   )
 );
 
-// Save user info to session
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user.account_id); // ✅ just save the ID
 });
 
-passport.deserializeUser((user, done) => {
-  done(null, user);
+passport.deserializeUser(async (id, done) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM accounts WHERE account_id = $1",
+      [id]
+    );
+    const user = result.rows[0];
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
 });
