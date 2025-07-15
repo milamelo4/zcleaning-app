@@ -4,12 +4,12 @@ const passport = require("passport");
 
 // Initialize Google OAuth
 router.get(
-  "/auth/google",
+  "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 // Handle OAuth callback
-router.get("/auth/google/callback", (req, res, next) => {
+router.get("/google/callback", (req, res, next) => {
   passport.authenticate("google", (err, user) => {
     if (err || !user) {
       req.flash("error_msg", "Access denied. Your account is not authorized.");
