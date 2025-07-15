@@ -15,6 +15,7 @@ const passport = require("passport");
 const flash = require("connect-flash");
 const pgSession = require("connect-pg-simple")(session);
 const pool = require("./src/config/db"); 
+const cookieParser = require("cookie-parser");
 
 //====================================
 // Routes setup
@@ -41,6 +42,7 @@ app.use(expressLayouts);
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cookieParser());
 
 app.use(
   session({
