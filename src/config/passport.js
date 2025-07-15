@@ -1,6 +1,7 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const { handleOAuthUser } = require("../controllers/users-controller.js");
+const pool = require("./db");
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID; 
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -44,7 +45,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM accounts WHERE account_id = $1",
+      "SELECT * FROM users WHERE account_id = $1",
       [id]
     );
     const user = result.rows[0];
