@@ -1,3 +1,5 @@
+console.log("appointments-drag.js loaded");
+
 let draggedElement = null;
 let currentSchedule = []; // array of all assigned clients
 let currentUnassigned = []; // array of unassigned clients
@@ -6,7 +8,7 @@ function handleDragStart(event) {
   const clientData = event.target.getAttribute("data-client");
   event.dataTransfer.setData("application/json", clientData);
   draggedElement = event.target; // store a reference to the actual DOM element being dragged
-}  
+}
 
 function handleUnassignDrop(event) {
   event.preventDefault();
@@ -148,4 +150,3 @@ document
     document.getElementById("draftAppointmentsInput").value =
       JSON.stringify(appointments);
   });
-
