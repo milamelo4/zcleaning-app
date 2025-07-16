@@ -2,9 +2,6 @@
 // Local environment and config
 //====================================
 require("dotenv").config(); 
-
-
-
 require("./src/config/passport");
 
 //====================================
@@ -47,6 +44,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
+app.set("trust proxy", 1); 
+
 app.use(
   session({
     store: new pgSession({
@@ -58,7 +57,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24, // 1 day
-      secure: false, // Use 'true' in production with HTTPS
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
     },
   })
