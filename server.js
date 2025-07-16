@@ -63,8 +63,6 @@ app.use(
   })
 );
 
-
-
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
@@ -82,7 +80,6 @@ app.use((req, res, next) => {
   res.locals.year = new Date().getFullYear();
   next();
 });
-
 
 //====================================
 // Routes 
@@ -117,13 +114,6 @@ app.use((err, req, res, next) => {
   res.status(500).render("pages/errors/500", { title: "Server Error" });
 });
 
-app.get("/debug-env", (req, res) => {
-  res.json({
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
-  });
-});
 
 //====================================
 // Start server

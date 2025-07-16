@@ -253,13 +253,12 @@ function saveScheduleDraft(req, res) {
 
   fs.writeFile(filePath, JSON.stringify(draftData, null, 2), (err) => {
     if (err) {
-      console.error("❌ Error writing draft file:", err);
+      console.error("Error writing draft file:", err);
       req.flash("error_msg", "Failed to save draft.");
       return res.redirect("/appointments/monthly-preview");
     }
 
-    req.flash("success_msg", "Draft saved successfully.");
-    console.log("✅ Draft saved to:", filePath);
+    req.flash("success_msg", "Draft saved successfully.");    
     res.redirect("/appointments/monthly-preview");
   });
 
